@@ -3,6 +3,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  padding-top: 10vh;
   
   min-height: 100vh;
   background-image: linear-gradient(rgba(4, 2, 2, 0), rgba(135, 226, 70, 0.25)),url('/assets/images/LoginImage_1.png'); 
@@ -17,13 +18,13 @@
 }
 
 .login-info {
-  margin-top: 40px;
+  margin-top: 20px;
   max-width: 700px;
   text-align: center;
 
   p {
     color: #131313;
-    font-size: 1.5em;
+    font-size: 1.3em;
     line-height: 1.5;
     text-shadow: 0px 0px 8px rgb(37, 36, 35);
   }
@@ -36,13 +37,14 @@
   /* left: calc(59% + 80px); */
   /* right: clamp(50px, 8%, 200px); */
   /* transform: translateY(-50%); */
-  background-color: rgba(40, 57, 16, 0.601);
-  padding: 40px;
-  padding-top: 100px;
+  background-color: rgba(31, 50, 4, 0.601);
+  padding: 5px;
+  padding-bottom: 30px;
+  padding-top: 50px;
   border-radius: 5px;
   box-shadow: 0 4px 10px rgba(155, 27, 27, 0.1);
   width: 100%;
-  max-width: 700px;
+  max-width: 500px;
   min-width: 300px; /* Fixed minimum width for the login card */
   text-align: center;
   /* margin-right: 8%; */ /* Controla a distância da borda direita */
@@ -50,27 +52,28 @@
   /* padding-top: 150px; */
 
   h1 {
-    color: #171010;
-    font-size: 2.2em;
-    margin-bottom: 60px;
+    color: #1d2f07;
+    font-size: 1.3em;
+    margin-bottom: 40px;
+    margin-top: 40px;
     line-height: .2;
     text-shadow: 0px 0px 8px rgb(240, 217, 174);
   }
 
   .app-header {
     position: absolute;
-    top: 20px;
-    left: 20px;
+    top: 18px;
+    left: 18px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 
     .app-logo {
-      max-width: 100px; /* Adjust as needed */
+      max-width: 80px; /* Adjust as needed */
       height: auto;
       /* margin-bottom: 15px; */
-      filter: drop-shadow(0px 0px 8px rgba(246, 90, 24, 0.613));
+      filter: drop-shadow(0px 0px 8px orange);
     }
   }
 
@@ -91,19 +94,24 @@
 
     label {
       display: block;
-      margin-bottom: 8px;
-      color: #eee;
-      font-weight: bold;
+      margin-bottom: 4px;
+      color: white;
+      font-size: 0.8em;
     }
 
     input[type="text"],
     input[type="password"] {
       width: 100%;
-      padding: 4px 12px; /* Reduced vertical padding */
-      border: 1px solid #ddd;
+      padding: 3px 8px; /* Reduced vertical padding */
+      border: 1px solid orange;
       border-radius: 3px;
       box-sizing: border-box;
-      font-size: 1em;
+      font-size: 0.8em;
+
+      &::placeholder {
+        font-size: 0.9em;
+        color: #999;
+      }
 
       &:focus {
         outline: 1px solid #007bff;
@@ -114,7 +122,7 @@
     .search-icon {
       position: absolute;
       right: 12px;
-      top: 50%;
+      top: 7%;
       transform: translateY(-50%);
       display: flex;
       align-items: center;
@@ -122,27 +130,27 @@
       cursor: pointer;
 
       img {
-        width: 18px; /* Slightly reduced icon size */
-        height: 18px;
+        width: 12px;
+        height: 12px;
       }
     }
   }
 
   button[type="submit"] {
-    background-color: #007bff;
+    background-color: rgb(20, 174, 20);
     color: white;
-    padding: 8px 10px;
+    padding: 9px 12px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 0.8em;
-    width: 20%;
+    font-size: 0.7em;
+    width: 12%;
     display: block;
     margin: 20px auto 0;
     transition: background-color 0.3s ease;
 
     &:hover {
-      background-color: #0056b3;
+      background-color:rgb(34, 186, 34);
     }
 
     &:disabled {

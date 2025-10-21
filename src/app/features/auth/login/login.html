@@ -7,9 +7,9 @@
 
     <!-- <h2>Select organization to sign in</h2> -->
     <div class="form-group search-group">
-      <label for="organization">Institution</label>
+      <label for="organization">Select Institution</label>
       <input type="text" id="organization" name="organization" [(ngModel)]="credentials.organization" placeholder="Search..." required>
-      <span class="search-icon"><img src="/assets/icons/search-icon.png" alt="Search" /></span> <!-- Add your search icon here, or use a font icon -->
+      <span class="search-icon"><img src="/assets/icons/search-icon.png" alt="Search" /></span>
     </div>
 
     <form (ngSubmit)="onLogin()">
