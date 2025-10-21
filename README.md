@@ -26,6 +26,8 @@ npm install
 2. Iniciar servidor de desenvolvimento:
 ```bash
 ng serve
+
+npm start
 ```
 
 ## Documentação

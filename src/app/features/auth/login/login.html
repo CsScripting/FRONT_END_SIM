@@ -1,22 +1,17 @@
 <div class="login-container">
-  <div class="login-card">
+  <div class="login-form">
     <div class="app-header">
-      <img src="/assets/images/logo.png" alt="Company Logo" class="app-logo"> <!-- Make sure to place your logo here -->
-      <h1>SIM - System Integration Manager</h1>
+      <img src="/assets/images/logo.png" alt="Company Logo" class="app-logo">
     </div>
+    <h1>Systems Integration Manager</h1>
 
-    <h2>Select organization to sign in</h2>
+    <!-- <h2>Select organization to sign in</h2> -->
     <div class="form-group search-group">
-      <label for="organization">Organization</label>
+      <label for="organization">Institution</label>
       <input type="text" id="organization" name="organization" [(ngModel)]="credentials.organization" placeholder="Search..." required>
       <span class="search-icon"><img src="/assets/icons/search-icon.png" alt="Search" /></span> <!-- Add your search icon here, or use a font icon -->
     </div>
 
-    <button type="submit" [disabled]="!credentials.organization">Continue</button>
-
-    <hr class="divider">
-
-    <h2>Login with User Credentials</h2>
     <form (ngSubmit)="onLogin()">
       <div class="form-group">
         <label for="username">Username</label>
@@ -26,7 +21,10 @@
         <label for="password">Password</label>
         <input type="password" id="password" name="password" [(ngModel)]="credentials.password" required>
       </div>
-      <button type="submit" [disabled]="!credentials.username || !credentials.password">Login</button>
+      <button type="submit" [disabled]="!credentials.username || !credentials.password">Sign In</button>
     </form>
+  </div>
+  <div class="login-info">
+    <p>Whether you're looking to optimize your operations, navigate complex challenges, or implement new procedures, we are here to provide the strategic guidance and support you need.</p>
   </div>
 </div>
