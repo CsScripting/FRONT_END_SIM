@@ -167,3 +167,30 @@
     margin: 30px 0;
   }
 }
+
+/* Responsive adjustments for smaller screens, like laptops */
+@media (max-height: 850px) {
+  .login-container {
+    padding-top: 10vh;
+    justify-content: flex-start; /* Aligns content to the top */
+  }
+
+  .login-form {
+    transform: scale(0.9);
+    padding-top: 50px; /* Keep space for logo */
+    padding-bottom: 20px;
+
+    h1 {
+      margin-top: 20px;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+  }
+
+  .login-info p {
+    font-size: 1.1em;
+  }
+}
