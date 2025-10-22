@@ -1,0 +1,7 @@
+{
+  "/api": {
+    "target": "http://sim.best.bs:8085",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

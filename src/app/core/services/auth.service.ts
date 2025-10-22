@@ -12,7 +12,7 @@ export class AuthService {
   private readonly TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private readonly USER_PERMISSIONS_KEY = 'user_permissions';
-  private readonly API_URL = 'http://sim.best.bs:8085';
+  private readonly API_URL = '/api';
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasValidAccessToken());
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
@@ -26,7 +26,7 @@ export class AuthService {
   }
 
   login(credentials: LoginCredentials): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>(`${this.API_URL}/api/token/`, credentials)
+    return this.http.post<TokenResponse>(`${this.API_URL}/token/`, credentials)
       .pipe(
         tap(tokens => {
           this.storeTokens(tokens);
@@ -44,7 +44,7 @@ export class AuthService {
       this.logout();
       return throwError('No refresh token available');
     }
-    return this.http.post<TokenResponse>(`${this.API_URL}/api/token/refresh/`, { refresh })
+    return this.http.post<TokenResponse>(`${this.API_URL}/token/refresh/`, { refresh })
       .pipe(
         tap(tokens => this.storeTokens(tokens)),
         catchError(error => {

@@ -1,9 +1,10 @@
 .login-container {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   flex-direction: column;
-  padding-top: 10vh;
+  padding-top: 200px;
+  box-sizing: border-box;
   
   min-height: 100vh;
   background-image: linear-gradient(rgba(4, 2, 2, 0), rgba(135, 226, 70, 0.25)),url('/assets/images/LoginImage_1.png'); 
@@ -39,8 +40,9 @@
   /* transform: translateY(-50%); */
   background-color: rgba(70, 74, 74, 0.349);
   padding: 5px;
-  padding-bottom: 30px;
-  padding-top: 50px;
+  padding-top: 40px;
+  padding-bottom: 20px;
+ 
   border-radius: 5px;
   box-shadow: 0 4px 10px rgba(23, 1, 1, 0.1);
   width: 100%;
@@ -54,8 +56,8 @@
   h1 {
     color: #1d2f07;
     font-size: 1.3em;
-    margin-bottom: 40px;
-    margin-top: 40px;
+    margin-top: 15px;
+    margin-bottom: 20px;
     line-height: .2;
     text-shadow: 0px 0px 8px rgb(240, 217, 174);
   }
@@ -88,6 +90,7 @@
     max-width: 320px;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 15px;
     margin-bottom: 20px;
     text-align: left;
     position: relative; // For search icon positioning
@@ -137,6 +140,41 @@
     }
   }
 
+  .autocomplete-dropdown {
+    position: absolute;
+    width: 100%;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1000;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 0.7em;
+
+        &.active,
+        &:hover {
+          background-color: #f0f0f0;
+        }
+
+        &.no-results {
+          color: #888;
+          cursor: default;
+        }
+      }
+    }
+  }
+
   button[type="submit"] {
     background-color: rgb(20, 174, 20);
     color: white;
@@ -171,25 +209,31 @@
 /* Responsive adjustments for smaller screens, like laptops */
 @media (max-height: 850px) {
   .login-container {
-    padding-top: 10vh;
+    padding-top: 160px;
     justify-content: flex-start; /* Aligns content to the top */
   }
 
   .login-form {
-    transform: scale(0.9);
-    padding-top: 50px; /* Keep space for logo */
+    /* transform: scale(0.9); */
+    /* transform-origin: top; */
+    padding-top: 40px; /* Keep space for logo */
     padding-bottom: 20px;
 
     h1 {
-      margin-top: 20px;
-      margin-bottom: 25px;
+      font-size: 1.1em;
+      margin-top: 15px;
+      margin-bottom: 20px;
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
   }
 
+  .login-info {
+    margin-top: 20px;
+  }
+  
   .login-info p {
     font-size: 1.1em;
   }

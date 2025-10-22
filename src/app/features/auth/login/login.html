@@ -5,23 +5,41 @@
     </div>
     <h1>Systems Integration Manager</h1>
 
-    <!-- <h2>Select organization to sign in</h2> -->
-    <div class="form-group search-group">
-      <label for="organization">Select Institution</label>
-      <input type="text" id="organization" name="organization" [(ngModel)]="credentials.organization" placeholder="Search..." required>
-      <span class="search-icon"><img src="/assets/icons/search-icon.png" alt="Search" /></span>
-    </div>
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+      <div class="form-group search-group">
+        <label for="organization">Select Institution</label>
+        <input 
+          type="text" 
+          id="organization" 
+          formControlName="organization" 
+          placeholder="Search..." 
+          (focus)="showDropdown = true"
+          (keydown)="onKeydown($event)"
+          required>
+        <span class="search-icon"><img src="/assets/icons/search-icon.png" alt="Search" /></span>
+        <div class="autocomplete-dropdown" *ngIf="showDropdown">
+          <ul>
+            <li *ngFor="let client of filteredClients; let i = index" 
+                (click)="selectClient(client)"
+                [class.active]="i === activeIndex">
+              {{ client.name }}
+            </li>
+            <li *ngIf="filteredClients.length === 0 && loginForm.get('organization')?.value" class="no-results">
+              No institutions found
+            </li>
+          </ul>
+        </div>
+      </div>
 
-    <form (ngSubmit)="onLogin()">
       <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" [(ngModel)]="credentials.username" required>
+        <label for="username">Email</label>
+        <input type="text" id="username" formControlName="username" required>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" [(ngModel)]="credentials.password" required>
+        <input type="password" id="password" formControlName="password" required>
       </div>
-      <button type="submit" [disabled]="!credentials.username || !credentials.password">Sign In</button>
+      <button type="submit" [disabled]="loginForm.invalid">Sign In</button>
     </form>
   </div>
   <div class="login-info">
