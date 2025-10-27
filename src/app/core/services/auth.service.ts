@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
-import { LoginCredentials, TokenResponse, UserPermissions } from '../models/auth.models';
+import { LoginCredentials, TokenResponse } from '../models/auth.models';
 import { Router } from '@angular/router';
+import { JwtHelperService, JwtPayload } from './jwt-helper.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,18 +12,37 @@ import { Router } from '@angular/router';
 export class AuthService {
   private readonly TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
-  private readonly USER_PERMISSIONS_KEY = 'user_permissions';
   private readonly API_URL = '/api';
 
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasValidAccessToken());
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) { }
+  private currentUserSubject = new BehaviorSubject<JwtPayload | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
+
+  constructor(
+    private http: HttpClient, 
+    private router: Router,
+    private jwtHelper: JwtHelperService
+  ) {
+    this.loadUserFromToken();
+  }
+
+  private loadUserFromToken(): void {
+    const token = this.getAccessToken();
+    if (token && !this.jwtHelper.isTokenExpired(token)) {
+      const decodedToken = this.jwtHelper.decodeToken(token);
+      this.currentUserSubject.next(decodedToken);
+      this.isAuthenticatedSubject.next(true);
+    } else {
+      this.currentUserSubject.next(null);
+      this.isAuthenticatedSubject.next(false);
+    }
+  }
 
   private hasValidAccessToken(): boolean {
     const token = this.getAccessToken();
-    // Add token validation logic (expiration, etc.) if necessary
-    return !!token;
+    return !!token && !this.jwtHelper.isTokenExpired(token);
   }
 
   login(credentials: LoginCredentials): Observable<TokenResponse> {
@@ -30,9 +50,9 @@ export class AuthService {
       .pipe(
         tap(tokens => {
           this.storeTokens(tokens);
+          const decodedToken = this.jwtHelper.decodeToken(tokens.access);
+          this.currentUserSubject.next(decodedToken);
           this.isAuthenticatedSubject.next(true);
-          // TODO: Fetch user permissions after successful login
-          // this.fetchUserPermissions().subscribe();
         }),
         catchError(this.handleError)
       );
@@ -42,11 +62,16 @@ export class AuthService {
     const refresh = this.getRefreshToken();
     if (!refresh) {
       this.logout();
-      return throwError('No refresh token available');
+      return throwError(() => new Error('No refresh token available'));
     }
     return this.http.post<TokenResponse>(`${this.API_URL}/token/refresh/`, { refresh })
       .pipe(
-        tap(tokens => this.storeTokens(tokens)),
+        tap(tokens => {
+          localStorage.setItem(this.TOKEN_KEY, tokens.access);
+          const decodedToken = this.jwtHelper.decodeToken(tokens.access);
+          this.currentUserSubject.next(decodedToken);
+          console.log('Access token refreshed successfully.');
+        }),
         catchError(error => {
           this.logout();
           return this.handleError(error);
@@ -57,8 +82,8 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    localStorage.removeItem(this.USER_PERMISSIONS_KEY);
     this.isAuthenticatedSubject.next(false);
+    this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
 
@@ -75,32 +100,12 @@ export class AuthService {
     return localStorage.getItem(this.REFRESH_TOKEN_KEY);
   }
 
-  storeUserPermissions(permissions: UserPermissions): void {
-    localStorage.setItem(this.USER_PERMISSIONS_KEY, JSON.stringify(permissions));
-  }
-
-  getUserPermissions(): UserPermissions | null {
-    const permissionsString = localStorage.getItem(this.USER_PERMISSIONS_KEY);
-    return permissionsString ? JSON.parse(permissionsString) : null;
-  }
-
-  hasAccessToProcess(processId: string): boolean {
-    const permissions = this.getUserPermissions();
-    return permissions?.allowedProcesses.includes(processId) || false;
+  isStaff(): boolean {
+    return this.currentUserSubject.value?.is_staff ?? false;
   }
 
   private handleError(error: any): Observable<never> {
     console.error('An error occurred:', error);
-    // Add more sophisticated error handling here (e.g., redirect to an error page)
-    return throwError(error);
+    return throwError(() => error);
   }
-
-  // TODO: Implement logic to fetch user permissions from the API
-  // fetchUserPermissions(): Observable<UserPermissions> {
-  //   return this.http.get<UserPermissions>(`${this.API_URL}/api/user/permissions/`)
-  //     .pipe(
-  //       tap(permissions => this.storeUserPermissions(permissions)),
-  //       catchError(this.handleError)
-  //     );
-  // }
 }

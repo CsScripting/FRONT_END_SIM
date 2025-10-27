@@ -1,0 +1,37 @@
+<div class="content-header">
+  <div class="header-left-content">
+    <h1>Dashboard</h1>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Home</a></li>
+      <li class="breadcrumb-item active">Dashboard</li>
+    </ol>
+  </div>
+</div>
+
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h2>Available Environments</h2>
+  </header>
+  <main class="environments-grid" *ngIf="environments$ | async as environments; else loading">
+    <div class="environment-card" *ngFor="let env of environments" (click)="onSelectEnvironment(env)">
+      <div class="card-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25A2.25 2.25 0 015.25 3h4.5M15 3h4.5a2.25 2.25 0 012.25 2.25" />
+        </svg>
+      </div>
+      <div class="card-content">
+        <h2 class="client-name">{{ env.client_name }}</h2>
+        <p class="environment-name">{{ env.name }}</p>
+        <span class="status" [class.active]="env.is_active">
+          {{ env.is_active ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
+    </div>
+    <div *ngIf="environments.length === 0" class="no-environments">
+        <p>No environments available for your user.</p>
+    </div>
+  </main>
+  <ng-template #loading>
+    <p class="loading-text">Loading environments...</p>
+  </ng-template>
+</div>

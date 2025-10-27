@@ -6,34 +6,9 @@
     <h1>Systems Integration Manager</h1>
 
     <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-      <div class="form-group search-group">
-        <label for="organization">Select Institution</label>
-        <input 
-          type="text" 
-          id="organization" 
-          formControlName="organization" 
-          placeholder="Search..." 
-          (focus)="showDropdown = true"
-          (keydown)="onKeydown($event)"
-          required>
-        <span class="search-icon"><img src="/assets/icons/search-icon.png" alt="Search" /></span>
-        <div class="autocomplete-dropdown" *ngIf="showDropdown">
-          <ul>
-            <li *ngFor="let client of filteredClients; let i = index" 
-                (click)="selectClient(client)"
-                [class.active]="i === activeIndex">
-              {{ client.name }}
-            </li>
-            <li *ngIf="filteredClients.length === 0 && loginForm.get('organization')?.value" class="no-results">
-              No institutions found
-            </li>
-          </ul>
-        </div>
-      </div>
-
       <div class="form-group">
-        <label for="username">Email</label>
-        <input type="text" id="username" formControlName="username" required>
+        <label for="email">Email</label>
+        <input type="email" id="email" formControlName="email" required>
       </div>
       <div class="form-group">
         <label for="password">Password</label>

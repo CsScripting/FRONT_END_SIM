@@ -1,7 +1,6 @@
 export interface LoginCredentials {
-    username: string;
+    email: string;
     password: string;
-    organization?: string; // Add this line
 }
 
 export interface TokenResponse {
