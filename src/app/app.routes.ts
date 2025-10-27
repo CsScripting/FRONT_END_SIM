@@ -15,15 +15,16 @@ export const routes: Routes = [
     path: '',
     component: MainLayoutComponent,
     canActivate: [authGuard],
+    data: { breadcrumb: 'Home' },
     children: [
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'tasks', component: TasksComponent },
-      { path: 'process', component: ProcessComponent },
-      { path: 'external-provider', component: ExternalProviderComponent },
+      { path: 'dashboard', component: DashboardComponent, data: { breadcrumb: 'Active Connections' } },
+      { path: 'tasks', component: TasksComponent, data: { breadcrumb: 'Tasks' } },
+      { path: 'process', component: ProcessComponent, data: { breadcrumb: 'Process' } },
+      { path: 'external-provider', component: ExternalProviderComponent, data: { breadcrumb: 'External Provider' } },
 
       // Admin routes - consider adding a staffGuard here later
-      { path: 'clients', component: ClientsComponent },
-      { path: 'environments-admin', component: EnvironmentsAdminComponent },
+      { path: 'clients', component: ClientsComponent, data: { breadcrumb: 'Clients' } },
+      { path: 'environments-admin', component: EnvironmentsAdminComponent, data: { breadcrumb: 'Environments' } },
 
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]

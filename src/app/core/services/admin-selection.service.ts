@@ -5,28 +5,37 @@ import { Injectable, signal } from '@angular/core';
 })
 export class AdminSelectionService {
   
-  private selectedClientIds = signal<Set<number>>(new Set());
+  private selectedClientId = signal<number | null>(null);
+  private selectedEnvironmentGroup = signal<string | null>(null);
   // Store the IDs of the final UserEnvironment objects (connections)
   private selectedConnectionIds = signal<Set<number>>(new Set());
 
-  public readonly selectedClients = this.selectedClientIds.asReadonly();
+  public readonly selectedClient = this.selectedClientId.asReadonly();
+  public readonly selectedEnvironment = this.selectedEnvironmentGroup.asReadonly();
   public readonly selectedConnections = this.selectedConnectionIds.asReadonly();
 
   constructor() { }
 
-  toggleClient(clientId: number): void {
-    this.selectedClientIds.update(currentSet => {
-      const newSet = new Set(currentSet);
-      if (newSet.has(clientId)) {
-        newSet.delete(clientId);
-      } else {
-        newSet.add(clientId);
+  selectClient(clientId: number): void {
+    this.selectedClientId.update(currentId => {
+      const newId = currentId === clientId ? null : clientId;
+      
+      // When client selection changes, clear subsequent selections
+      if (newId !== currentId) {
+        this.selectedEnvironmentGroup.set(null);
+        this.selectedConnectionIds.set(new Set());
       }
-      // When client selection changes, clear the connection selection as it might become invalid
-      this.selectedConnectionIds.set(new Set());
-      console.log('Selected Client IDs:', newSet);
-      return newSet;
+      
+      console.log('Selected Client ID:', newId);
+      return newId;
     });
+  }
+
+  selectEnvironmentGroup(groupName: string | null): void {
+    this.selectedEnvironmentGroup.set(groupName);
+    // Also clear connections when the group changes
+    this.selectedConnectionIds.set(new Set());
+    console.log('Selected Environment Group:', groupName);
   }
 
   toggleConnection(connectionId: number): void {
@@ -43,7 +52,7 @@ export class AdminSelectionService {
   }
 
   isClientSelected(clientId: number): boolean {
-    return this.selectedClientIds().has(clientId);
+    return this.selectedClientId() === clientId;
   }
 
   isConnectionSelected(connectionId: number): boolean {

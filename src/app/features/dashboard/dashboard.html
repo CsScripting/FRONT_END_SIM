@@ -1,10 +1,6 @@
 <div class="content-header">
   <div class="header-left-content">
-    <h1>Dashboard</h1>
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="#">Home</a></li>
-      <li class="breadcrumb-item active">Dashboard</li>
-    </ol>
+    <h1>Active Connections</h1>
   </div>
 </div>
 
@@ -17,13 +13,13 @@
     <span>Please go to <a routerLink="/clients">Clients</a>, then <a routerLink="/environments-admin">Environments</a> to activate the connections you want to see here.</span>
   </div>
 
-  <!-- Main Dashboard View -->
+  <!-- Main Active Connections View -->
   <ng-container *ngIf="environmentGroups$ | async as groups">
     <div class="dashboard-container" *ngIf="!user.is_staff || hasActiveFilters()">
     
       <header class="dashboard-header">
-        <button *ngIf="selectedGroup()" (click)="goBack()" class="back-button">
-          <i class="fas fa-arrow-left"></i> Back to Groups
+        <button *ngIf="selectedGroup()" (click)="goBack()" class="back-button" title="Back to Groups">
+          <i class="fas fa-arrow-left"></i>
         </button>
         <h2>{{ selectedGroup() ? 'Connections for ' + selectedGroup() : 'Available Connection Groups' }}</h2>
       </header>
@@ -32,13 +28,12 @@
       <main class="environments-grid" *ngIf="!selectedGroup()">
         <div class="environment-card group-card" *ngFor="let group of groups | keyvalue" (click)="onSelectGroup(group.key, groups)">
           <div class="card-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
-            </svg>
+            <i class="fas fa-link"></i>
           </div>
           <div class="card-content">
-            <h2 class="client-name">{{ group.key }}</h2>
-            <p class="environment-name">{{ group.value.length }} connection(s)</p>
+            <h2 class="client-name">{{ group.value[0].client_name }}</h2>
+            <p class="environment-name">{{ group.key }}</p>
+            <p class="connection-count">{{ group.value.length }} connection(s)</p>
           </div>
         </div>
         <div *ngIf="(groups | keyvalue).length === 0 && hasActiveFilters()" class="no-environments">

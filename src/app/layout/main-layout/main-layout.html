@@ -5,7 +5,11 @@
         <a class="nav-link" (click)="toggleSidebar($event)" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="/dashboard" class="nav-link">Home</a>
+        <ol class="breadcrumb-nav">
+          <li *ngFor="let breadcrumb of breadcrumbs$ | async; let last = last">
+            <a [routerLink]="breadcrumb.url" [class.active]="last">{{ breadcrumb.label }}</a>
+          </li>
+        </ol>
       </li>
     </ul>
     <ul class="navbar-nav ml-auto" *ngIf="currentUser$ | async as user">
@@ -40,43 +44,41 @@
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false" *ngIf="currentUser$ | async as user">
 
-          <li class="nav-header">GENERAL</li>
+          <li class="nav-item" style="height: 1rem;"></li> <!-- Spacer -->
+          <li class="nav-header">Integration Settings</li>
           <li class="nav-item">
             <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>Dashboard</p>
+              <i class="nav-icon fas fa-link"></i>
+              <p>Active Connections</p>
             </a>
           </li>
 
-          <!-- Menu for NON-STAFF users -->
-          <ng-container *ngIf="!user.is_staff">
-            <li class="nav-item">
-              <!-- NOTE: This currently points to the dashboard route. It can be changed later. -->
-              <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
-                <i class="nav-icon fas fa-layer-group"></i>
-                <p>Environments</p>
-              </a>
-            </li>
-          </ng-container>
-
-          <!-- Menu for STAFF users -->
+          <!-- Staff-only configuration section -->
           <ng-container *ngIf="user.is_staff">
-            <li class="nav-header">ADMINISTRATION</li>
-            <li class="nav-item">
-              <a routerLink="/clients" routerLinkActive="active" class="nav-link">
-                <i class="nav-icon fas fa-building"></i>
-                <p>Clients</p>
-              </a>
+            <li class="nav-item" style="height: 3rem;"></li> <!-- Spacer -->
+            <li class="nav-header" (click)="toggleConfigurationMenu($event)">
+              <i class="fas fa-chevron-right" [class.rotated]="isConfigurationMenuOpen()"></i>
+              <span>Select Configuration</span>
             </li>
-            <li class="nav-item">
-              <a routerLink="/environments-admin" routerLinkActive="active" class="nav-link">
-                <i class="nav-icon fas fa-server"></i>
-                <p>Environments</p>
-              </a>
-            </li>
+
+            <ng-container *ngIf="isConfigurationMenuOpen()">
+              <li class="nav-item">
+                <a routerLink="/clients" routerLinkActive="active" class="nav-link">
+                  <i class="nav-icon fas fa-building"></i>
+                  <p>Clients</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="/environments-admin" routerLinkActive="active" class="nav-link">
+                  <i class="nav-icon fas fa-server"></i>
+                  <p>Environments</p>
+                </a>
+              </li>
+            </ng-container>
           </ng-container>
 
-          <li class="nav-header">OPERATIONS</li>
+          <li class="nav-item" style="height: 2.5rem;"></li> <!-- Spacer -->
+          <li class="nav-header">Operations</li>
           <li class="nav-item">
             <a routerLink="/tasks" routerLinkActive="active" class="nav-link">
               <i class="nav-icon fas fa-tasks"></i>
@@ -89,10 +91,12 @@
               <p>Process</p>
             </a>
           </li>
-          <li class="nav-header">SETTINGS</li>
+
+          <li class="nav-item" style="height: 2.5rem;"></li> <!-- Spacer -->
+          <li class="nav-header">Information Connections</li>
           <li class="nav-item">
             <a routerLink="/external-provider" routerLinkActive="active" class="nav-link">
-              <i class="nav-icon fas fa-server"></i>
+              <i class="nav-icon fas fa-info-circle"></i>
               <p>External Provider</p>
             </a>
           </li>

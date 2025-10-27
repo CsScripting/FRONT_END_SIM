@@ -22,28 +22,24 @@ interface EnvironmentGroup {
     <div class="content-header">
       <div class="header-left-content">
         <h1>Environments</h1>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a routerLink="/clients">Administration</a></li>
-          <li class="breadcrumb-item active">Environments</li>
-        </ol>
       </div>
     </div>
 
     <div class="admin-container">
       <header class="admin-header">
-        <button *ngIf="selectedGroup()" (click)="goBack()" class="back-button">
+        <button *ngIf="selectedEnvironment()" (click)="goBack()" class="back-button">
           <i class="fas fa-arrow-left"></i>
         </button>
-        <h2>{{ selectedGroup() ? 'Select Connections for ' + selectedGroup() : 'Select Environment Type' }}</h2>
-        <p>{{ selectedGroup() ? 'Activate the specific connections to display on the dashboard.' : 'Choose the type of environment to work with.' }}</p>
+        <h2>{{ selectedEnvironment() ? 'Select Connections for ' + selectedEnvironment() : 'Select Environment Type' }}</h2>
+        <p>{{ selectedEnvironment() ? 'Activate the specific connections to display on the dashboard.' : 'Choose the type of environment to work with.' }}</p>
       </header>
 
       <main class="content-grid" *ngIf="allEnvironments$ | async as allEnvs; else loading">
         
         <!-- View 1: Show Environment Groups -->
-        <ng-container *ngIf="!selectedGroup()">
+        <ng-container *ngIf="!selectedEnvironment()">
             <div *ngIf="(environmentGroups$ | async) as groups; else noClientsSelected">
-                <div *ngIf="groups.length > 0; else noClientsSelected">
+                <div *ngIf="groups.length > 0; else noClientsSelectedTemplate">
                     <div 
                         class="content-card" 
                         *ngFor="let group of groups" 
@@ -59,7 +55,7 @@ interface EnvironmentGroup {
         </ng-container>
 
         <!-- View 2: Show Connections within a Group -->
-        <ng-container *ngIf="selectedGroup()">
+        <ng-container *ngIf="selectedEnvironment()">
             <div 
                 class="content-card" 
                 *ngFor="let conn of groupConnections()" 
@@ -77,8 +73,16 @@ interface EnvironmentGroup {
         <ng-template #noClientsSelected>
             <div class="no-content prompt">
                 <i class="fas fa-info-circle"></i>
-                <p>No Clients Selected</p>
-                <span>Please <a routerLink="/clients">select one or more clients</a> to see available environments.</span>
+                <p>No Client Selected</p>
+                <span>Please <a routerLink="/clients">select a client</a> to see available environments.</span>
+            </div>
+        </ng-template>
+        
+        <ng-template #noClientsSelectedTemplate>
+            <div class="no-content prompt">
+                <i class="fas fa-info-circle"></i>
+                <p>No Client Selected</p>
+                <span>Please <a routerLink="/clients">select a client</a> to see available environments.</span>
             </div>
         </ng-template>
 
@@ -126,16 +130,18 @@ export class EnvironmentsAdminComponent implements OnInit {
   
   allEnvironments$!: Observable<UserEnvironment[]>;
   environmentGroups$!: Observable<EnvironmentGroup[]>;
-  selectedClientIds$!: Observable<Set<number>>;
+  selectedClientId$!: Observable<number | null>;
   
-  selectedGroup = signal<string | null>(null);
+  // State is now managed by the service
+  selectedEnvironment: AdminSelectionService['selectedEnvironment'];
   groupConnections = signal<UserEnvironment[]>([]);
 
   constructor(
     private environmentService: EnvironmentService,
     private adminSelectionService: AdminSelectionService
   ) {
-    this.selectedClientIds$ = toObservable(this.adminSelectionService.selectedClients);
+    this.selectedEnvironment = this.adminSelectionService.selectedEnvironment;
+    this.selectedClientId$ = toObservable(this.adminSelectionService.selectedClient);
   }
 
   ngOnInit(): void {
@@ -143,13 +149,13 @@ export class EnvironmentsAdminComponent implements OnInit {
       map(response => response.environments)
     );
 
-    this.environmentGroups$ = combineLatest([this.allEnvironments$, this.selectedClientIds$]).pipe(
-      map(([allEnvs, selectedClientIds]) => {
-        if (selectedClientIds.size === 0) {
+    this.environmentGroups$ = combineLatest([this.allEnvironments$, this.selectedClientId$]).pipe(
+      map(([allEnvs, selectedClientId]) => {
+        if (!selectedClientId) {
           return [];
         }
 
-        const filteredEnvs = allEnvs.filter(env => selectedClientIds.has(env.client));
+        const filteredEnvs = allEnvs.filter(env => env.client === selectedClientId);
         const groupCounts = new Map<string, number>();
 
         filteredEnvs.forEach(env => {
@@ -163,16 +169,16 @@ export class EnvironmentsAdminComponent implements OnInit {
   }
 
   onSelectGroup(groupName: string, allEnvs: UserEnvironment[]): void {
-    const selectedClientIds = this.adminSelectionService.selectedClients();
+    const selectedClientId = this.adminSelectionService.selectedClient();
     const connections = allEnvs.filter(env => 
-      env.environment_name === groupName && selectedClientIds.has(env.client)
+      env.environment_name === groupName && env.client === selectedClientId
     );
     this.groupConnections.set(connections);
-    this.selectedGroup.set(groupName);
+    this.adminSelectionService.selectEnvironmentGroup(groupName);
   }
 
   goBack(): void {
-    this.selectedGroup.set(null);
+    this.adminSelectionService.selectEnvironmentGroup(null);
     this.groupConnections.set([]);
   }
 

@@ -15,10 +15,6 @@ import { Client } from '../../core/models/client.models';
     <div class="content-header">
       <div class="header-left-content">
         <h1>Clients</h1>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="#">Administration</a></li>
-          <li class="breadcrumb-item active">Clients</li>
-        </ol>
       </div>
     </div>
 
@@ -32,7 +28,7 @@ import { Client } from '../../core/models/client.models';
         <div 
           class="content-card" 
           *ngFor="let client of clients" 
-          (click)="toggleClientSelection(client.id)"
+          (click)="selectClient(client.id)"
           [class.selected]="isClientSelected(client.id)">
           
           <div class="card-icon">
@@ -216,8 +212,8 @@ export class ClientsComponent implements OnInit {
     );
   }
 
-  toggleClientSelection(clientId: number): void {
-    this.adminSelectionService.toggleClient(clientId);
+  selectClient(clientId: number): void {
+    this.adminSelectionService.selectClient(clientId);
   }
 
   isClientSelected(clientId: number): boolean {
