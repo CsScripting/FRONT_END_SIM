@@ -38,7 +38,8 @@
     </a>
     <div class="sidebar">
       <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false" *ngIf="currentUser$ | async as user">
+
           <li class="nav-header">GENERAL</li>
           <li class="nav-item">
             <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
@@ -46,6 +47,35 @@
               <p>Dashboard</p>
             </a>
           </li>
+
+          <!-- Menu for NON-STAFF users -->
+          <ng-container *ngIf="!user.is_staff">
+            <li class="nav-item">
+              <!-- NOTE: This currently points to the dashboard route. It can be changed later. -->
+              <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+                <i class="nav-icon fas fa-layer-group"></i>
+                <p>Environments</p>
+              </a>
+            </li>
+          </ng-container>
+
+          <!-- Menu for STAFF users -->
+          <ng-container *ngIf="user.is_staff">
+            <li class="nav-header">ADMINISTRATION</li>
+            <li class="nav-item">
+              <a routerLink="/clients" routerLinkActive="active" class="nav-link">
+                <i class="nav-icon fas fa-building"></i>
+                <p>Clients</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/environments-admin" routerLinkActive="active" class="nav-link">
+                <i class="nav-icon fas fa-server"></i>
+                <p>Environments</p>
+              </a>
+            </li>
+          </ng-container>
+
           <li class="nav-header">OPERATIONS</li>
           <li class="nav-item">
             <a routerLink="/tasks" routerLinkActive="active" class="nav-link">
