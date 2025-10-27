@@ -25,6 +25,7 @@ export class DashboardComponent implements OnInit {
   
   currentUser$: Observable<JwtPayload | null>;
   hasActiveFilters = signal(false);
+  selectedConnectionIds$!: Observable<Set<number>>;
 
   constructor(
     private environmentService: EnvironmentService,
@@ -32,18 +33,18 @@ export class DashboardComponent implements OnInit {
     private adminSelectionService: AdminSelectionService
   ) {
     this.currentUser$ = this.authService.currentUser$;
+    this.selectedConnectionIds$ = toObservable(this.adminSelectionService.selectedConnections);
   }
 
   ngOnInit(): void {
     const allEnvironments$ = this.environmentService.getUserEnvironments().pipe(
       map(response => response.environments)
     );
-    const selectedConnectionIds$ = toObservable(this.adminSelectionService.selectedConnections);
 
     this.environmentGroups$ = combineLatest([
       allEnvironments$,
       this.currentUser$,
-      selectedConnectionIds$
+      this.selectedConnectionIds$
     ]).pipe(
       map(([allEnvs, user, selectedConnectionIds]) => {
         if (!user) {

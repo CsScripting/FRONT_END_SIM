@@ -32,7 +32,7 @@ interface EnvironmentGroup {
     <div class="admin-container">
       <header class="admin-header">
         <button *ngIf="selectedGroup()" (click)="goBack()" class="back-button">
-          <i class="fas fa-arrow-left"></i> Back to Groups
+          <i class="fas fa-arrow-left"></i>
         </button>
         <h2>{{ selectedGroup() ? 'Select Connections for ' + selectedGroup() : 'Select Environment Type' }}</h2>
         <p>{{ selectedGroup() ? 'Activate the specific connections to display on the dashboard.' : 'Choose the type of environment to work with.' }}</p>
@@ -102,7 +102,7 @@ interface EnvironmentGroup {
     .admin-container { padding: 10px; }
     .admin-header { margin-bottom: 20px; text-align: left; display: flex; align-items: center; gap: 1rem; }
     .admin-header h2 { font-size: 1.2rem; font-weight: 500; margin: 0; }
-    .admin-header p { color: #6c757d; font-size: 0.9rem; margin: 0; border-left: 1px solid #ced4da; padding-left: 1rem; }
+    .admin-header p { color: #6c757d; font-size: 0.9rem; margin: 0; border-left: 1px solid #ced4da; padding-left: 1rem; flex-grow: 1; }
     .content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
     .content-card { background-color: #fff; border-radius: 8px; padding: 20px; border: 1px solid #e9ecef; cursor: pointer; transition: all 0.2s ease-in-out; display: flex; align-items: center; gap: 15px; position: relative; overflow: hidden; }
     .content-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); }
@@ -126,6 +126,7 @@ export class EnvironmentsAdminComponent implements OnInit {
   
   allEnvironments$!: Observable<UserEnvironment[]>;
   environmentGroups$!: Observable<EnvironmentGroup[]>;
+  selectedClientIds$!: Observable<Set<number>>;
   
   selectedGroup = signal<string | null>(null);
   groupConnections = signal<UserEnvironment[]>([]);
@@ -133,16 +134,16 @@ export class EnvironmentsAdminComponent implements OnInit {
   constructor(
     private environmentService: EnvironmentService,
     private adminSelectionService: AdminSelectionService
-  ) {}
+  ) {
+    this.selectedClientIds$ = toObservable(this.adminSelectionService.selectedClients);
+  }
 
   ngOnInit(): void {
     this.allEnvironments$ = this.environmentService.getUserEnvironments().pipe(
       map(response => response.environments)
     );
 
-    const selectedClientIds$ = toObservable(this.adminSelectionService.selectedClients);
-
-    this.environmentGroups$ = combineLatest([this.allEnvironments$, selectedClientIds$]).pipe(
+    this.environmentGroups$ = combineLatest([this.allEnvironments$, this.selectedClientIds$]).pipe(
       map(([allEnvs, selectedClientIds]) => {
         if (selectedClientIds.size === 0) {
           return [];
