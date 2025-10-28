@@ -7,7 +7,7 @@
   box-sizing: border-box;
   
   min-height: 100vh;
-  background-image: linear-gradient(rgba(4, 2, 2, 0), rgba(135, 226, 70, 0.25)),url('/assets/images/LoginImage_1.png'); 
+  background-image: linear-gradient(rgba(4, 2, 2, 0), rgba(135, 226, 70, 0.25)),url('/assets/images/laptop.jpg'); 
   background-size: cover;
   background-position: left;
   background-repeat: no-repeat;
@@ -27,7 +27,7 @@
     color: #131313;
     font-size: 1.3em;
     line-height: 1.5;
-    text-shadow: 0px 0px 8px rgb(115, 59, 2);
+    text-shadow: 0px 0px 8px rgb(246, 245, 244);
   }
 }
 
@@ -38,12 +38,12 @@
   /* left: calc(59% + 80px); */
   /* right: clamp(50px, 8%, 200px); */
   /* transform: translateY(-50%); */
-  background-color: rgba(70, 74, 74, 0.349);
+  background-color: rgba(9, 11, 11, 0.349);
   padding: 5px;
   padding-top: 40px;
   padding-bottom: 20px;
  
-  border-radius: 5px;
+  border-radius: 3px;
   box-shadow: 0 4px 10px rgba(23, 1, 1, 0.1);
   width: 100%;
   max-width: 500px;
@@ -96,10 +96,7 @@
     position: relative; // For search icon positioning
 
     label {
-      display: block;
-      margin-bottom: 4px;
-      color: white;
-      font-size: 0.8em;
+      display: none;
     }
 
     input[type="text"],
@@ -112,6 +109,7 @@
       box-sizing: border-box;
       font-size: 0.7em;
       font-family: 'Roboto', sans-serif;
+      // padding-right: 30px; /* No longer needed */
 
       &::placeholder {
         font-size: 0.9em;
@@ -123,20 +121,32 @@
         box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
       }
     }
-
-    .search-icon {
-      position: absolute;
-      right: 8px;
-      top: 72%;
-      transform: translateY(-50%);
+    
+    .input-group-custom {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
+      
+      input {
+        flex-grow: 1;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-right: none;
+      }
 
-      img {
-        width: 12px;
-        height: 12px;
+      .input-group-append-custom {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        background-color: #e9ecef;
+        border: 1px solid orange;
+        border-left: 1px solid #ced4da;
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
+
+        .fas {
+          font-size: 0.7rem;
+          color: #495057;
+        }
       }
     }
   }

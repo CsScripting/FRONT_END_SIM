@@ -7,12 +7,20 @@
 
     <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
       <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" formControlName="email" required>
+        <div class="input-group-custom">
+          <input type="email" id="email" formControlName="email" required placeholder="Email">
+          <div class="input-group-append-custom">
+            <span class="fas fa-user"></span>
+          </div>
+        </div>
       </div>
       <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" formControlName="password" required>
+        <div class="input-group-custom">
+          <input type="password" id="password" formControlName="password" required placeholder="Password">
+          <div class="input-group-append-custom">
+            <span class="fas fa-lock"></span>
+          </div>
+        </div>
       </div>
       <button type="submit" [disabled]="loginForm.invalid">Sign In</button>
     </form>
