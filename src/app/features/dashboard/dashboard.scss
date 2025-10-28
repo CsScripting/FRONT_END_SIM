@@ -118,12 +118,14 @@
 }
 
 .environments-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  display: flex; /* Use Flexbox for more predictable alignment */
+  flex-wrap: wrap;
   gap: 20px;
+  justify-content: flex-start; /* Ensure items are aligned to the left */
 }
 
 .environment-card {
+  width: 280px; /* Give cards a fixed width to work with Flexbox */
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);

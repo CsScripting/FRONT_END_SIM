@@ -278,3 +278,26 @@
 .dropdown-footer {
   text-align: center;
 }
+
+.active-environment-display {
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  color: #6c757d; // A subtle color to match the theme
+  font-size: 0.9rem;
+
+  .fa-database {
+    margin-right: 0.5rem;
+    color: #17a2b8; // Info color
+  }
+
+  .client-name {
+    font-weight: 600; // Bold the client name
+    color: #343a40;
+  }
+
+  .separator {
+    margin: 0 0.5rem;
+    font-size: 0.7rem;
+  }
+}

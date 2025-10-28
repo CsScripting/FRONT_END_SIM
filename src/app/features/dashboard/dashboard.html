@@ -4,65 +4,37 @@
   </div>
 </div>
 
-<ng-container *ngIf="currentUser$ | async as user">
+<div class="dashboard-container" *ngIf="hasSelection$ | async; else noSelectionPrompt">
+  <header class="dashboard-header">
+    <h2>Your currently active connections are shown below.</h2>
+  </header>
 
-  <!-- Prompt for Staff users with no filters -->
-  <div *ngIf="user.is_staff && !hasActiveFilters()" class="no-content prompt">
-    <i class="fas fa-check-square"></i>
-    <p>No Connections Activated</p>
-    <span>Please go to <a routerLink="/clients">Clients</a>, then <a routerLink="/environments-admin">Environments</a> to activate the connections you want to see here.</span>
-  </div>
-
-  <!-- Main Active Connections View -->
-  <ng-container *ngIf="environmentGroups$ | async as groups">
-    <div class="dashboard-container" *ngIf="!user.is_staff || hasActiveFilters()">
-    
-      <header class="dashboard-header">
-        <button *ngIf="selectedGroup()" (click)="goBack()" class="back-button" title="Back to Groups">
-          <i class="fas fa-arrow-left"></i>
-        </button>
-        <h2>{{ selectedGroup() ? 'Connections for ' + selectedGroup() : 'Available Connection Groups' }}</h2>
-      </header>
-
-      <!-- Group View -->
-      <main class="environments-grid" *ngIf="!selectedGroup()">
-        <div class="environment-card group-card" *ngFor="let group of groups | keyvalue" (click)="onSelectGroup(group.key, groups)">
-          <div class="card-icon">
-            <i class="fas fa-link"></i>
-          </div>
-          <div class="card-content">
-            <h2 class="client-name">{{ group.value[0].client_name }}</h2>
-            <p class="environment-name">{{ group.key }}</p>
-            <p class="connection-count">{{ group.value.length }} connection(s)</p>
-          </div>
-        </div>
-        <div *ngIf="(groups | keyvalue).length === 0 && hasActiveFilters()" class="no-environments">
-            <p>No connections match the current filter criteria.</p>
-        </div>
-      </main>
-      
-      <!-- Environments within Group View -->
-      <main class="environments-grid" *ngIf="selectedGroup()">
-        <div class="environment-card" *ngFor="let env of groupEnvironments()" (click)="onSelectEnvironment(env)">
-          <div class="card-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25A2.25 2.25 0 015.25 3h4.5M15 3h4.5a2.25 2.25 0 012.25 2.25" />
-            </svg>
-          </div>
-          <div class="card-content">
-            <h2 class="client-name">{{ env.client_name }}</h2>
-            <p class="environment-name">{{ env.name }}</p>
-            <span class="status" [class.active]="env.is_active">
-              {{ env.is_active ? 'Active' : 'Inactive' }}
-            </span>
-          </div>
-        </div>
-      </main>
-      
-      <ng-template #loading>
-        <p class="loading-text">Loading connections...</p>
-      </ng-template>
+  <main class="environments-grid" *ngIf="selectedConnections$ | async as connections">
+    <div class="environment-card" *ngFor="let env of connections">
+      <div class="card-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25A2.25 2.25 0 015.25 3h4.5M15 3h4.5a2.25 2.25 0 012.25 2.25" />
+        </svg>
+      </div>
+      <div class="card-content">
+        <h2 class="client-name">{{ env.client_name }}</h2>
+        <p class="environment-name">{{ env.name }}</p>
+        <span class="status" [class.active]="env.is_active">
+          {{ env.is_active ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
     </div>
-  </ng-container>
 
-</ng-container>
+    <div *ngIf="connections.length === 0" class="no-content">
+      <p>Loading selected connections...</p>
+    </div>
+  </main>
+</div>
+
+<ng-template #noSelectionPrompt>
+  <div class="no-content prompt">
+    <i class="fas-fa-check-square"></i>
+    <p>No Connections Activated</p>
+    <span>Please go to <a routerLink="/clients">Clients</a>, then <a routerLink="/environments-admin">Environments</a>, and finally <a routerLink="/connections">Connections</a> to activate the connections you want to work with.</span>
+  </div>
+</ng-template>

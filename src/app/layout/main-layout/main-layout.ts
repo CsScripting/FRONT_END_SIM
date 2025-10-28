@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -7,15 +7,16 @@ import { signal } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { JwtPayload } from '../../core/services/jwt-helper.service';
 import { Breadcrumb, BreadcrumbService } from '../../core/services/breadcrumb.service';
+import { EnvironmentService } from '../../core/services/environment.service';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterModule],
+  imports: [CommonModule, RouterModule, RouterOutlet],
   templateUrl: './main-layout.html',
   styleUrls: ['./main-layout.scss']
 })
-export class MainLayoutComponent {
+export class MainLayoutComponent implements OnInit {
   currentUser$: Observable<JwtPayload | null>;
   breadcrumbs$: Observable<Breadcrumb[]>;
 
@@ -26,10 +27,18 @@ export class MainLayoutComponent {
   constructor(
     private authService: AuthService, 
     private router: Router,
-    private breadcrumbService: BreadcrumbService
+    private breadcrumbService: BreadcrumbService,
+    private environmentService: EnvironmentService
   ) {
     this.currentUser$ = this.authService.currentUser$;
     this.breadcrumbs$ = this.breadcrumbService.breadcrumbs$;
+  }
+
+  ngOnInit(): void {
+    this.environmentService.loadInitialState().subscribe({
+      next: () => console.log('MainLayout: Initial state loaded successfully.'),
+      error: (err) => console.error('Failed to load initial environment state', err)
+    });
   }
 
   toggleSidebar(event: Event): void {

@@ -1,0 +1,48 @@
+<div class="content-header">
+  <div class="header-left-content">
+    <h1>Connections</h1>
+  </div>
+</div>
+
+<div class="admin-container" *ngIf="selectedClientName && selectedTypeName; else prompt">
+  <header class="admin-header">
+    <h2>Select active connections for {{ selectedClientName }} / {{ selectedTypeName }}</h2>
+    <p>The connections you select here will be set as your active working environment.</p>
+  </header>
+
+  <form [formGroup]="selectionForm" (ngSubmit)="onSubmit()">
+    <main class="content-grid" formArrayName="selectedConnections">
+      <label 
+        class="content-card connection-card" 
+        *ngFor="let conn of connections(); let i = index"
+        [class.selected]="connectionsFormArray.controls[i].value">
+        
+        <div class="card-icon"><i class="fas fa-plug"></i></div>
+        <div class="card-content">
+          <h2 class="client-name">{{ conn.name }}</h2>
+          <p class="environment-count">{{ conn.client_name }}</p>
+        </div>
+        <div class="selection-indicator">
+          <input type="checkbox" [formControlName]="i">
+        </div>
+      </label>
+
+      <div *ngIf="connections().length === 0" class="no-content">
+        <p>No connections found for the selected client and environment type.</p>
+      </div>
+    </main>
+
+    <footer class="admin-footer">
+      <button type="submit" class="btn-save">Save Selection</button>
+    </footer>
+  </form>
+</div>
+
+<ng-template #prompt>
+  <div class="no-content prompt">
+    <i class="fas fa-info-circle"></i>
+    <p>Incomplete Selection</p>
+    <span *ngIf="!selectedClientName">Please start by <a routerLink="/clients">selecting a client</a>.</span>
+    <span *ngIf="selectedClientName && !selectedTypeName">Please continue by <a routerLink="/environments-admin">selecting an environment type</a>.</span>
+  </div>
+</ng-template>

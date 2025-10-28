@@ -1,0 +1,76 @@
+/* Using a direct copy of client/environment styles for consistency */
+:host { display: block; }
+.content-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #dee2e6; margin-bottom: 20px; }
+.content-header h1 { font-size: 1.5rem; margin: 0; font-weight: 400; color: #444; }
+.admin-container { padding: 10px; }
+.admin-header { margin-bottom: 20px; text-align: left; }
+.admin-header h2 { font-size: 1.2rem; font-weight: 500; margin: 0; }
+.admin-header p { color: #6c757d; font-size: 0.9rem; }
+.content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+
+.content-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: relative;
+  overflow: hidden;
+}
+
+.content-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card-icon i { font-size: 24px; color: #17753f; }
+.client-name { font-size: 1.1rem; font-weight: 500; margin: 0; }
+.environment-count { font-size: 0.9rem; color: #6c757d; margin: 0; }
+
+.selection-indicator {
+  margin-left: auto;
+}
+
+.selection-indicator input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #17753f;
+}
+
+.content-card.selected {
+  border-color: #17753f;
+  box-shadow: 0 0 0 2px rgba(23, 117, 63, 0.25);
+}
+
+.loading-text, .no-content { color: #6c757d; text-align: center; padding: 20px; }
+.prompt { border: 1px dashed #ced4da; border-radius: 8px; background-color: #f8f9fa; grid-column: 1 / -1; }
+.prompt i { font-size: 1.5rem; color: #007bff; margin-bottom: 0.5rem; }
+.prompt p { font-weight: 500; margin-bottom: 0.25rem; }
+.prompt span { font-size: 0.9rem; }
+
+.admin-footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-save {
+  background-color: #17753f;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-save:hover {
+  background-color: #115730;
+}

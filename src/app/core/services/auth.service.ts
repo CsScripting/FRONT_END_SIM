@@ -5,6 +5,7 @@ import { tap, catchError } from 'rxjs/operators';
 import { LoginCredentials, TokenResponse } from '../models/auth.models';
 import { Router } from '@angular/router';
 import { JwtHelperService, JwtPayload } from './jwt-helper.service';
+import { EnvironmentService } from './environment.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class AuthService {
   constructor(
     private http: HttpClient, 
     private router: Router,
-    private jwtHelper: JwtHelperService
+    private jwtHelper: JwtHelperService,
+    private environmentService: EnvironmentService
   ) {
     this.loadUserFromToken();
   }
@@ -84,6 +86,7 @@ export class AuthService {
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     this.isAuthenticatedSubject.next(false);
     this.currentUserSubject.next(null);
+    this.environmentService.clearSelectionState();
     this.router.navigate(['/login']);
   }
 

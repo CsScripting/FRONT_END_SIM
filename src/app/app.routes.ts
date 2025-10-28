@@ -1,33 +1,52 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './features/auth/login/login';
-import { DashboardComponent } from './features/dashboard/dashboard';
-import { authGuard } from './core/guards/auth.guard';
 import { MainLayoutComponent } from './layout/main-layout/main-layout';
-import { TasksComponent } from './features/tasks/tasks';
-import { ProcessComponent } from './features/process/process';
-import { ExternalProviderComponent } from './features/external-provider/external-provider';
-import { ClientsComponent } from './features/clients/clients';
-import { EnvironmentsAdminComponent } from './features/environments-admin/environments-admin';
+import { LoginComponent } from './features/auth/login/login';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  {
-    path: '',
-    component: MainLayoutComponent,
-    canActivate: [authGuard],
-    data: { breadcrumb: 'Home' },
-    children: [
-      { path: 'dashboard', component: DashboardComponent, data: { breadcrumb: 'Active Connections' } },
-      { path: 'tasks', component: TasksComponent, data: { breadcrumb: 'Tasks' } },
-      { path: 'process', component: ProcessComponent, data: { breadcrumb: 'Process' } },
-      { path: 'external-provider', component: ExternalProviderComponent, data: { breadcrumb: 'External Provider' } },
-
-      // Admin routes - consider adding a staffGuard here later
-      { path: 'clients', component: ClientsComponent, data: { breadcrumb: 'Clients' } },
-      { path: 'environments-admin', component: EnvironmentsAdminComponent, data: { breadcrumb: 'Environments' } },
-
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
-    ]
-  },
-  { path: '**', redirectTo: '' } // Redirect any other path to the default guarded route
+    { path: 'login', component: LoginComponent },
+    {
+        path: '',
+        component: MainLayoutComponent,
+        canActivate: [authGuard],
+        children: [
+            { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+            { 
+                path: 'dashboard',
+                loadComponent: () => import('./features/dashboard/dashboard').then(m => m.DashboardComponent),
+                data: { breadcrumb: 'Dashboard' }
+            },
+            { 
+                path: 'clients',
+                loadComponent: () => import('./features/clients/clients').then(m => m.ClientsComponent),
+                data: { breadcrumb: 'Clients' }
+            },
+            { 
+                path: 'environments-admin',
+                loadComponent: () => import('./features/environments-admin/environments-admin').then(m => m.EnvironmentsAdminComponent),
+                data: { breadcrumb: 'Environments' }
+            },
+            { 
+                path: 'connections',
+                loadComponent: () => import('./features/connections/connections').then(m => m.ConnectionsComponent),
+                data: { breadcrumb: 'Connections' }
+            },
+            { 
+                path: 'tasks',
+                loadComponent: () => import('./features/tasks/tasks').then(m => m.TasksComponent),
+                data: { breadcrumb: 'Tasks' }
+            },
+            { 
+                path: 'process',
+                loadComponent: () => import('./features/process/process').then(m => m.ProcessComponent),
+                data: { breadcrumb: 'Process' }
+            },
+            { 
+                path: 'external-provider',
+                loadComponent: () => import('./features/external-provider/external-provider').then(m => m.ExternalProviderComponent),
+                data: { breadcrumb: 'External Provider' }
+            },
+        ]
+    },
+    { path: '**', redirectTo: 'dashboard' }
 ];

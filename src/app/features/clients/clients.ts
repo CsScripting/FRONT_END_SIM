@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { EnvironmentService } from '../../core/services/environment.service';
-import { AdminSelectionService } from '../../core/services/admin-selection.service';
+import { EnvironmentService, CurrentSelectionState } from '../../core/services/environment.service';
 import { Client } from '../../core/models/client.models';
 
 @Component({
@@ -28,8 +28,8 @@ import { Client } from '../../core/models/client.models';
         <div 
           class="content-card" 
           *ngFor="let client of clients" 
-          (click)="selectClient(client.id)"
-          [class.selected]="isClientSelected(client.id)">
+          (click)="selectClientAndNavigate(client.id)"
+          [class.selected]="client.id === selectedClientId">
           
           <div class="card-icon">
             <i class="fas fa-building"></i>
@@ -186,37 +186,47 @@ import { Client } from '../../core/models/client.models';
     }
   `]
 })
-export class ClientsComponent implements OnInit {
+export class ClientsComponent implements OnInit, OnDestroy {
   clients$!: Observable<Client[]>;
+  selectedClientId: number | null = null;
+  private stateSubscription!: Subscription;
 
   constructor(
     private environmentService: EnvironmentService,
-    private adminSelectionService: AdminSelectionService
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.clients$ = this.environmentService.getUserEnvironments().pipe(
-      map(response => {
-        // Use a Map to get unique clients by their ID
+    // Subscribe to the central state to get the currently selected client
+    this.stateSubscription = this.environmentService.currentSelectionState$.subscribe(state => {
+      this.selectedClientId = state.clientId;
+    });
+
+    // Populate the list of clients from the allUserEnvironments in the state
+    this.clients$ = this.environmentService.currentSelectionState$.pipe(
+      map(state => {
         const clientsMap = new Map<number, string>();
-        response.environments.forEach(env => {
+        state.allUserEnvironments.forEach(env => {
           if (!clientsMap.has(env.client)) {
             clientsMap.set(env.client, env.client_name);
           }
         });
-        
-        // Convert the Map back to an array of Client objects and sort alphabetically
         return Array.from(clientsMap, ([id, name]) => ({ id, name }))
           .sort((a, b) => a.name.localeCompare(b.name));
       })
     );
   }
 
-  selectClient(clientId: number): void {
-    this.adminSelectionService.selectClient(clientId);
+  ngOnDestroy(): void {
+    if (this.stateSubscription) {
+      this.stateSubscription.unsubscribe();
+    }
   }
 
-  isClientSelected(clientId: number): boolean {
-    return this.adminSelectionService.isClientSelected(clientId);
+  selectClientAndNavigate(clientId: number): void {
+    // Update the central state with the new client selection.
+    // This will also clear any downstream selections (type, connections).
+    this.environmentService.selectClient(clientId);
+    this.router.navigate(['/environments-admin']);
   }
 }

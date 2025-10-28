@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Data, NavigationEnd, Router } from '@angular/router';
-import { BehaviorSubject, filter, combineLatest, map, distinctUntilChanged } from 'rxjs';
-import { AdminSelectionService } from './admin-selection.service';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { BehaviorSubject, filter, combineLatest, map } from 'rxjs';
 import { EnvironmentService } from './environment.service';
-import { Client } from '../models/client.models';
 
 export interface Breadcrumb {
   label: string;
@@ -20,47 +17,37 @@ export class BreadcrumbService {
 
   constructor(
     private router: Router,
-    private adminSelectionService: AdminSelectionService,
     private environmentService: EnvironmentService
   ) {
     const routerEvents$ = this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     );
 
-    const selectedClient$ = toObservable(this.adminSelectionService.selectedClient);
-    const selectedEnvironment$ = toObservable(this.adminSelectionService.selectedEnvironment);
+    const selectionState$ = this.environmentService.currentSelectionState$;
 
-    // Get a list of all clients to resolve names from IDs
-    const clients$ = this.environmentService.getUserEnvironments().pipe(
-      map(response => {
-        const clientsMap = new Map<number, string>();
-        response.environments.forEach(env => {
-          if (!clientsMap.has(env.client)) {
-            clientsMap.set(env.client, env.client_name);
-          }
-        });
-        return Array.from(clientsMap, ([id, name]) => ({ id, name }));
-      })
-    );
-
-    combineLatest([routerEvents$, clients$, selectedClient$, selectedEnvironment$]).pipe(
-      map(([_, clients, selectedClientId, selectedEnvGroup]) => {
+    combineLatest([routerEvents$, selectionState$]).pipe(
+      map(([_, selectionState]) => {
         const root = this.router.routerState.snapshot.root;
         const baseCrumbs: Breadcrumb[] = [];
         this.addBreadcrumb(root, [], baseCrumbs);
 
-        // If an admin has selected a client, build a contextual breadcrumb
-        if (selectedClientId) {
-          const client = clients.find(c => c.id === selectedClientId);
-          if (client) {
-            const contextualCrumbs: Breadcrumb[] = [{ label: 'Home', url: '/' }];
-            contextualCrumbs.push({ label: client.name, url: '/clients' });
+        // If a client is selected, build the contextual breadcrumb
+        if (selectionState.clientId && selectionState.clientName) {
+          const contextualCrumbs: Breadcrumb[] = [{ label: 'Home', url: '/' }];
 
-            if (selectedEnvGroup) {
-              contextualCrumbs.push({ label: selectedEnvGroup, url: '/environments-admin' });
-            }
-            return contextualCrumbs;
+          contextualCrumbs.push({ label: selectionState.clientName, url: '/clients' });
+
+          if (selectionState.typeName) {
+            contextualCrumbs.push({ label: selectionState.typeName, url: '/environments-admin' });
           }
+          
+          // Add connections if they are selected and we are on a relevant page
+          if (selectionState.environmentIds.length > 0 && this.isRelevantPage(root)) {
+             const connectionLabel = `${selectionState.environmentIds.length} Connection(s)`;
+             contextualCrumbs.push({ label: connectionLabel, url: '/connections' });
+          }
+
+          return contextualCrumbs;
         }
         
         // Otherwise, return the default breadcrumb based on the route
@@ -71,9 +58,10 @@ export class BreadcrumbService {
     });
   }
 
-  private isUserOnAdminRoute(route: ActivatedRouteSnapshot): boolean {
-    const routeConfigPath = route.firstChild?.routeConfig?.path;
-    return routeConfigPath === 'clients' || routeConfigPath === 'environments-admin';
+  // Helper to determine if we should show the full breadcrumb
+  private isRelevantPage(route: ActivatedRouteSnapshot): boolean {
+    const path = route.firstChild?.routeConfig?.path;
+    return ['dashboard', 'tasks', 'process'].includes(path ?? '');
   }
 
   private addBreadcrumb(route: ActivatedRouteSnapshot | null, parentUrl: string[], breadcrumbs: Breadcrumb[]) {
