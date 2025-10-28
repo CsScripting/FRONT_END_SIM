@@ -1,3 +1,24 @@
+:host {
+  display: block;
+  position: relative; /* Needed for the z-index context of children */
+  height: 100vh;
+  overflow: auto; /* Allow scrolling within the component if content is too long */
+}
+
+:host::before {
+  content: '';
+  position: fixed; /* Fixed to the viewport */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: linear-gradient(rgba(4, 2, 2, 0), rgba(135, 226, 70, 0.25)),url('/assets/images/laptop_2.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1; /* Place it behind the content */
+}
+
 .login-container {
   display: flex;
   justify-content: flex-start;
@@ -5,17 +26,8 @@
   flex-direction: column;
   padding-top: 200px;
   box-sizing: border-box;
-  
-  min-height: 100vh;
-  background-image: linear-gradient(rgba(4, 2, 2, 0), rgba(135, 226, 70, 0.25)),url('/assets/images/laptop.jpg'); 
-  background-size: cover;
-  background-position: left;
-  background-repeat: no-repeat;
-  /* position: relative; */
-  
-  
-  /* Removido o gap, pois space-between gere a distância */
-  /* gap: 150px; <-- REMOVER/COMENTAR */
+  width: 100%; 
+  min-height: 100%; /* Change from vh to % to fill the host */
 }
 
 .login-info {
