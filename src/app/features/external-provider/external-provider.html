@@ -1,10 +1,185 @@
 <div class="content-header">
+  <div class="header-left-content">
   <h1>External Provider</h1>
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
-    <li class="breadcrumb-item active">External Provider</li>
-  </ol>
+  </div>
 </div>
-<div class="placeholder-container">
-  <!-- This page is intentionally blank for now. -->
+
+<!-- Loading State -->
+<div class="loading-container" *ngIf="loading">
+  <div class="spinner"></div>
+  <p>Loading environment details...</p>
+</div>
+
+<!-- Error States -->
+<div class="error-container" *ngIf="!loading && error">
+  <div class="error-card" *ngIf="error === 'NO_ENVIRONMENT_SELECTED'">
+    <div class="error-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+      </svg>
+    </div>
+    <h2>No Environment Selected</h2>
+    <p>Please select an environment first to view external provider details.</p>
+    <a routerLink="/connections" class="btn-primary">Go to Connections</a>
+  </div>
+
+  <div class="error-card" *ngIf="error === 'USER_PROFILE_NOT_FOUND'">
+    <div class="error-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+      </svg>
+    </div>
+    <h2>User Profile Not Found</h2>
+    <p>Your user profile is not properly configured. Please contact your administrator.</p>
+  </div>
+
+  <div class="error-card" *ngIf="error === 'GENERIC_ERROR'">
+    <div class="error-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+      </svg>
+    </div>
+    <h2>Error Loading Details</h2>
+    <p>An unexpected error occurred while loading environment details. Please try again later.</p>
+    <button (click)="loadEnvironmentDetails()" class="btn-secondary">Retry</button>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="provider-container" *ngIf="!loading && !error && environmentDetails">
+  
+  <!-- Current Environment Card -->
+  <section class="environment-section">
+    <h2 class="section-title">Current Environment</h2>
+    <div class="environment-card">
+      <div class="environment-header">
+        <div class="environment-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z" />
+          </svg>
+        </div>
+        <div class="environment-info">
+          <h3 class="environment-name">{{ environmentDetails.environment.name }}</h3>
+          <span class="badge" [class.active]="environmentDetails.environment.is_active">
+            {{ environmentDetails.environment.is_active ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+      </div>
+      <div class="environment-details">
+        <div class="detail-item">
+          <span class="detail-label">Client:</span>
+          <span class="detail-value">{{ environmentDetails.environment.client_name }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Environment Type:</span>
+          <span class="detail-value">{{ environmentDetails.environment.environment_name }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Configured Integrations -->
+  <section class="credentials-section">
+    <h2 class="section-title">
+      Configured Integrations 
+      <span class="count-badge">{{ environmentDetails.credentials_count }}</span>
+    </h2>
+
+    <!-- No credentials message -->
+    <div class="no-credentials" *ngIf="environmentDetails.credentials_count === 0">
+      <div class="no-credentials-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3a2.25 2.25 0 012.25 2.25v3.776m6 0V6A2.25 2.25 0 0119.5 3.75h3A2.25 2.25 0 0124.75 6v3.776" />
+        </svg>
+      </div>
+      <p>No integrations configured for this environment yet.</p>
+      <small>Contact your administrator to configure external provider credentials.</small>
+    </div>
+
+    <!-- Credentials Grid -->
+    <div class="credentials-grid" *ngIf="environmentDetails.credentials_count > 0">
+      <div class="credential-card" *ngFor="let credential of environmentDetails.credentials">
+        <div class="credential-header">
+          <div class="credential-title-section">
+            <h3 class="credential-name">{{ credential.name }}</h3>
+            <span class="credential-type-badge">{{ credential.credential_type_name }}</span>
+          </div>
+        </div>
+        
+        <div class="credential-body">
+          <div class="credential-field" *ngFor="let field of getCredentialFields(credential)">
+            <span class="field-label">{{ field.key }}:</span>
+            <span class="field-value" [class.sensitive]="field.isSensitive">
+              <span class="value-text" [class.masked]="field.isSensitive">{{ field.value }}</span>
+              <svg *ngIf="field.isSensitive" class="lock-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="credential-footer">
+          <small class="timestamp">Last updated: {{ credential.updated_at | date:'short' }}</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ETL Flow Diagram -->
+  <section class="etl-flow-section" *ngIf="showETLFlow()">
+    <h2 class="section-title">ETL Integration Flow</h2>
+    <div class="etl-flow-diagram">
+      <div class="flow-step extract">
+        <div class="step-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15M9 12l3 3m0 0l3-3m-3 3V2.25" />
+          </svg>
+        </div>
+        <div class="step-content">
+          <h4>Extract</h4>
+          <p class="step-label">Data Source</p>
+          <p class="step-endpoint">{{ getSourceEndpoint() }}</p>
+        </div>
+      </div>
+
+      <div class="flow-arrow">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+        </svg>
+      </div>
+
+      <div class="flow-step transform">
+        <div class="step-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12a7.5 7.5 0 0015 0m-15 0a7.5 7.5 0 1115 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077l1.41-.513m14.095-5.13l1.41-.513M5.106 17.785l1.15-.964m11.49-9.642l1.149-.964M7.501 19.795l.75-1.3m7.5-12.99l.75-1.3m-6.063 16.658l.26-1.477m2.605-14.772l.26-1.477m0 17.726l-.26-1.477M10.698 4.614l-.26-1.477M16.5 19.794l-.75-1.299M7.5 4.205L12 12m6.894 5.785l-1.149-.964M6.256 8.357l-1.15-.964m1.036 9.392l-1.41-.513M18.364 8.357l1.41-.513M14.5 6.205l.75-1.3m-5.25 15.59L12 12" />
+          </svg>
+        </div>
+        <div class="step-content">
+          <h4>Transform</h4>
+          <p class="step-label">Middleware</p>
+          <p class="step-description">SIM Backend</p>
+        </div>
+      </div>
+
+      <div class="flow-arrow">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+        </svg>
+      </div>
+
+      <div class="flow-step load">
+        <div class="step-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15" />
+          </svg>
+        </div>
+        <div class="step-content">
+          <h4>Load</h4>
+          <p class="step-label">Destination</p>
+          <p class="step-endpoint">{{ getDestinationEndpoint() }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </div>

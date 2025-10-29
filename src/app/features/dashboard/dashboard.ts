@@ -23,16 +23,16 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // This component now simply reflects the final selection made elsewhere
-    const state$ = this.environmentService.currentSelectionState$;
+    // Dashboard shows the PERSISTED state (what is saved in backend)
+    const state$ = this.environmentService.persistedState$;
 
     this.hasSelection$ = state$.pipe(
-      tap(state => console.log('DashboardComponent: Received state for hasSelection$ pipe:', state)),
+      tap(state => console.log('DashboardComponent: Received persisted state for hasSelection$:', state)),
       map(state => state.environmentIds.length > 0)
     );
 
     this.selectedConnections$ = state$.pipe(
-      tap(state => console.log('DashboardComponent: Received state for selectedConnections$ pipe:', state)),
+      tap(state => console.log('DashboardComponent: Received persisted state for selectedConnections$:', state)),
       map(state => 
         state.allUserEnvironments.filter(env => 
           state.environmentIds.includes(env.id)

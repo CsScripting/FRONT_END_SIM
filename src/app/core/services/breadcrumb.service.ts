@@ -23,7 +23,8 @@ export class BreadcrumbService {
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     );
 
-    const selectionState$ = this.environmentService.currentSelectionState$;
+    // Use persisted state for breadcrumb (shows what is saved in backend)
+    const selectionState$ = this.environmentService.persistedState$;
 
     combineLatest([routerEvents$, selectionState$]).pipe(
       map(([_, selectionState]) => {
@@ -32,7 +33,7 @@ export class BreadcrumbService {
         this.addBreadcrumb(root, [], baseCrumbs);
 
         // If a client is selected, build the contextual breadcrumb
-        if (selectionState.clientId && selectionState.clientName) {
+        if (selectionState?.clientId && selectionState?.clientName) {
           const contextualCrumbs: Breadcrumb[] = [{ label: 'Home', url: '/' }];
 
           contextualCrumbs.push({ label: selectionState.clientName, url: '/clients' });

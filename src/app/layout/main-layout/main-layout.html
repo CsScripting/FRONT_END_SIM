@@ -11,6 +11,17 @@
           </li>
         </ol>
       </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <div class="active-environment-badge" *ngIf="persistedState$ | async as state">
+          <span class="badge badge-success" *ngIf="state.environmentIds.length > 0" 
+                title="{{ state.clientName }} - {{ state.typeName }} ({{ state.environmentIds.length }} connection{{ state.environmentIds.length !== 1 ? 's' : '' }})">
+            {{ state.environmentIds.length }} connection{{ state.environmentIds.length !== 1 ? 's' : '' }}
+          </span>
+          <span class="badge badge-secondary" *ngIf="state.environmentIds.length === 0">
+            No connections
+          </span>
+        </div>
+      </li>
     </ul>
     <ul class="navbar-nav ml-auto" *ngIf="currentUser$ | async as user">
       <li class="nav-item d-flex align-items-center">

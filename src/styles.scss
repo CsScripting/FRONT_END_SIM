@@ -5,5 +5,9 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Prevent scrolling on the html/body itself */
+}
+
+/* Apply overflow hidden only when NOT on the login page */
+body:not(.is-login-page) {
+  overflow: hidden;
 }

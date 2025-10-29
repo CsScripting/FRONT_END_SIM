@@ -115,12 +115,14 @@ export class EnvironmentsAdminComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.stateSubscription = this.environmentService.currentSelectionState$.subscribe(state => {
+    // Subscribe to the working state (temporary during navigation)
+    this.stateSubscription = this.environmentService.workingState$.subscribe(state => {
       this.selectedClientId = state.clientId;
       this.selectedTypeName = state.typeName;
     });
 
-    this.environmentGroups$ = this.environmentService.currentSelectionState$.pipe(
+    // Get environment groups from working state
+    this.environmentGroups$ = this.environmentService.workingState$.pipe(
       map(state => {
         if (!state.clientId) {
           return []; // If no client is selected, there are no groups to show

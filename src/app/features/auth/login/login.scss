@@ -1,22 +1,32 @@
 :host {
   display: block;
-  position: relative; /* Needed for the z-index context of children */
-  height: 100vh;
-  overflow: auto; /* Allow scrolling within the component if content is too long */
+  position: relative; /* Needed for z-index */
+  height: 100vh;      /* Make the component itself fill the viewport height */
+  overflow-y: auto; /* Allow vertical scrolling if content overflows */
+  margin: 0;
+  padding: 0;
 }
 
 :host::before {
   content: '';
-  position: fixed; /* Fixed to the viewport */
+  position: fixed;   /* Fix to the viewport */
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-image: linear-gradient(rgba(4, 2, 2, 0), rgba(135, 226, 70, 0.25)),url('/assets/images/laptop_2.jpg');
+  width: 100vw;      /* Full viewport width */
+  height: 100vh;     /* Full viewport height - THIS IS CRITICAL */
+  z-index: -1;       /* Behind the content */
+
+  
+
+  /* 2. Layered backgrounds: gradient on top, image below */
+  background-image:
+    linear-gradient(rgba(4, 2, 2, 0), rgba(203, 221, 191, 0.25)), /* Top layer */
+    url('/assets/images/laptop_2.jpg');                          /* Bottom layer */
+
+  /* 3. Apply different sizes and repeats to each layer */
   background-size: cover;
-  background-position: center;
+  background-position: center bottom;
   background-repeat: no-repeat;
-  z-index: -1; /* Place it behind the content */
 }
 
 .login-container {
@@ -27,7 +37,7 @@
   padding-top: 200px;
   box-sizing: border-box;
   width: 100%; 
-  min-height: 100%; /* Change from vh to % to fill the host */
+  min-height: 100%;
 }
 
 .login-info {
@@ -84,10 +94,10 @@
     align-items: center;
 
     .app-logo {
-      max-width: 80px; /* Adjust as needed */
+      max-width: 70px; /* Adjust as needed */
       height: auto;
       /* margin-bottom: 15px; */
-      filter: drop-shadow(0px 0px 8px rgb(240, 199, 15));
+      filter: drop-shadow(0px 0px 8px rgb(241, 224, 149));
     }
   }
 

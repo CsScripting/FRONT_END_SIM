@@ -197,13 +197,13 @@ export class ClientsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Subscribe to the central state to get the currently selected client
-    this.stateSubscription = this.environmentService.currentSelectionState$.subscribe(state => {
+    // Subscribe to the working state (temporary during navigation)
+    this.stateSubscription = this.environmentService.workingState$.subscribe(state => {
       this.selectedClientId = state.clientId;
     });
 
-    // Populate the list of clients from the allUserEnvironments in the state
-    this.clients$ = this.environmentService.currentSelectionState$.pipe(
+    // Populate the list of clients from the allUserEnvironments in the working state
+    this.clients$ = this.environmentService.workingState$.pipe(
       map(state => {
         const clientsMap = new Map<number, string>();
         state.allUserEnvironments.forEach(env => {

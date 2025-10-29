@@ -279,25 +279,34 @@
   text-align: center;
 }
 
-.active-environment-display {
+/* Active Environment Badge */
+.active-environment-badge {
   display: flex;
   align-items: center;
-  padding: 0 1rem;
-  color: #6c757d; // A subtle color to match the theme
-  font-size: 0.9rem;
+  margin-left: 1rem;
 
-  .fa-database {
-    margin-right: 0.5rem;
-    color: #17a2b8; // Info color
-  }
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 3px;
+    white-space: nowrap;
 
-  .client-name {
-    font-weight: 600; // Bold the client name
-    color: #343a40;
-  }
+    i {
+      font-size: 0.7rem;
+    }
 
-  .separator {
-    margin: 0 0.5rem;
-    font-size: 0.7rem;
+    &.badge-success {
+      background-color: #17753f;
+      color: #fff;
+    }
+
+    &.badge-secondary {
+      background-color: #6c757d;
+      color: #fff;
+    }
   }
 }

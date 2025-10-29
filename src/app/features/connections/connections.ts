@@ -35,7 +35,8 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.stateSubscription = this.environmentService.currentSelectionState$.subscribe(state => {
+    // Subscribe to working state (temporary during navigation)
+    this.stateSubscription = this.environmentService.workingState$.subscribe(state => {
       this.selectedClientName = state.clientName;
       this.selectedTypeName = state.typeName;
 
@@ -71,15 +72,23 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
       .map((checked: boolean, i: number) => checked ? this.connections()[i].id : null)
       .filter((id: number | null) => id !== null);
 
+    // Save selection to backend - only here the state is persisted
     this.environmentService.setCurrentEnvironments(selectedIds).subscribe({
       next: () => {
-        console.log('Selection saved successfully');
+        console.log('Selection saved successfully to backend');
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         console.error('Failed to save selection', err);
-        // NOTE: Add user-facing error handling here (e.g., a toast message)
+        // TODO: Add user-facing error handling here (e.g., a toast message)
       }
     });
+  }
+
+  onCancel(): void {
+    // Reset working state to persisted state (discard changes)
+    this.environmentService.resetWorkingState();
+    console.log('Selection cancelled - working state reset to persisted state');
+    this.router.navigate(['/dashboard']);
   }
 }

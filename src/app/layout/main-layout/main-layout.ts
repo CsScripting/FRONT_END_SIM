@@ -7,7 +7,7 @@ import { signal } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { JwtPayload } from '../../core/services/jwt-helper.service';
 import { Breadcrumb, BreadcrumbService } from '../../core/services/breadcrumb.service';
-import { EnvironmentService } from '../../core/services/environment.service';
+import { EnvironmentService, CurrentSelectionState } from '../../core/services/environment.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -19,6 +19,7 @@ import { EnvironmentService } from '../../core/services/environment.service';
 export class MainLayoutComponent implements OnInit {
   currentUser$: Observable<JwtPayload | null>;
   breadcrumbs$: Observable<Breadcrumb[]>;
+  persistedState$: Observable<CurrentSelectionState>;
 
   isSidebarCollapsed = signal(false);
   isUserMenuVisible = signal(false);
@@ -32,6 +33,7 @@ export class MainLayoutComponent implements OnInit {
   ) {
     this.currentUser$ = this.authService.currentUser$;
     this.breadcrumbs$ = this.breadcrumbService.breadcrumbs$;
+    this.persistedState$ = this.environmentService.persistedState$;
   }
 
   ngOnInit(): void {

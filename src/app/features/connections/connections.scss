@@ -58,6 +58,22 @@
   border-top: 1px solid #dee2e6;
   display: flex;
   justify-content: flex-end;
+  gap: 1rem;
+}
+
+.btn-cancel {
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-cancel:hover {
+  background-color: #545b62;
 }
 
 .btn-save {
