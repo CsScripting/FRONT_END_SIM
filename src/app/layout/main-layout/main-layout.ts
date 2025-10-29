@@ -23,7 +23,8 @@ export class MainLayoutComponent implements OnInit {
 
   isSidebarCollapsed = signal(false);
   isUserMenuVisible = signal(false);
-  isConfigurationMenuOpen = signal(false);
+  isConfigurationMenuOpen = signal(true);
+  isOperationsMenuOpen = signal(true);
   
   constructor(
     private authService: AuthService, 
@@ -51,6 +52,11 @@ export class MainLayoutComponent implements OnInit {
   toggleConfigurationMenu(event: Event): void {
     event.preventDefault();
     this.isConfigurationMenuOpen.update(value => !value);
+  }
+
+  toggleOperationsMenu(event: Event): void {
+    event.preventDefault();
+    this.isOperationsMenuOpen.update(value => !value);
   }
 
   toggleUserMenu(event: Event): void {

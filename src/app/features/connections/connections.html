@@ -6,29 +6,33 @@
 
 <div class="admin-container" *ngIf="selectedClientName && selectedTypeName; else prompt">
   <header class="admin-header">
-    <h2>Select active connections for {{ selectedClientName }} / {{ selectedTypeName }}</h2>
-    <p>The connections you select here will be set as your active working environment.</p>
+    <h2>Active connections for {{ selectedClientName }} / {{ selectedTypeName }}</h2>
+    <p *ngIf="selectedEnvironment && credentials().length > 0">
+      The following {{ credentials().length }} connection{{ credentials().length !== 1 ? 's' : '' }} will be activated:
+    </p>
+    <p *ngIf="!selectedEnvironment || credentials().length === 0" class="warning-text">
+      No connections available for this environment. Please configure credentials first.
+    </p>
   </header>
 
-  <form [formGroup]="selectionForm" (ngSubmit)="onSubmit()">
+  <form [formGroup]="selectionForm" (ngSubmit)="onSubmit()" *ngIf="selectedEnvironment && credentials().length > 0">
     <main class="content-grid" formArrayName="selectedConnections">
-      <label 
-        class="content-card connection-card" 
-        *ngFor="let conn of connections(); let i = index"
-        [class.selected]="connectionsFormArray.controls[i].value">
+      <div 
+        class="content-card credential-card selected" 
+        *ngFor="let cred of credentials(); let i = index">
         
-        <div class="card-icon"><i class="fas fa-plug"></i></div>
+        <div class="card-icon">
+          <i class="fas fa-plug"></i>
+        </div>
         <div class="card-content">
-          <h2 class="client-name">{{ conn.name }}</h2>
-          <p class="environment-count">{{ conn.client_name }}</p>
+          <h2 class="credential-name">{{ cred.name }}</h2>
+          <p class="credential-type">Type: {{ cred.credential_type_name }}</p>
+          <p class="credential-environment">Environment: {{ selectedEnvironment.name }}</p>
         </div>
         <div class="selection-indicator">
           <input type="checkbox" [formControlName]="i">
+          <span class="selected-label">Selected</span>
         </div>
-      </label>
-
-      <div *ngIf="connections().length === 0" class="no-content">
-        <p>No connections found for the selected client and environment type.</p>
       </div>
     </main>
 
@@ -37,6 +41,12 @@
       <button type="submit" class="btn-save">Save Selection</button>
     </footer>
   </form>
+
+  <div class="no-credentials-message" *ngIf="!selectedEnvironment || credentials().length === 0">
+    <i class="fas fa-exclamation-circle"></i>
+    <p>No connections configured for this environment.</p>
+    <small>Contact your administrator to configure credentials.</small>
+  </div>
 </div>
 
 <ng-template #prompt>

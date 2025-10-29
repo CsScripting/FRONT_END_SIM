@@ -11,6 +11,7 @@ import {
 
 export interface CurrentSelectionState {
   environmentIds: number[];
+  credentialIds: number[];
   clientId: number | null;
   clientName: string | null;
   typeId: number | null;
@@ -26,6 +27,7 @@ export class EnvironmentService {
 
   private readonly initialState: CurrentSelectionState = {
     environmentIds: [],
+    credentialIds: [],
     clientId: null,
     clientName: null,
     typeId: null,
@@ -58,6 +60,7 @@ export class EnvironmentService {
       tap(response => {
         const state: CurrentSelectionState = {
           environmentIds: response.current_environment_ids,
+          credentialIds: response.current_environment_credential_ids || [],
           clientId: response.current_environment_client_id,
           clientName: response.current_environment_client_name,
           typeId: response.current_environment_type_id,
@@ -87,6 +90,7 @@ export class EnvironmentService {
       tap(response => {
         const state: Partial<CurrentSelectionState> = {
           environmentIds: response.current_environment_ids,
+          credentialIds: response.current_environment_credential_ids || [],
           clientId: response.current_environment_client_id,
           clientName: response.current_environment_client_name,
           typeId: response.current_environment_type_id,

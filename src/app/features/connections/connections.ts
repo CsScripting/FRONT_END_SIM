@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, FormArray, FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import { EnvironmentService } from '../../core/services/environment.service';
-import { UserEnvironment } from '../../core/models/environment.models';
+import { UserEnvironment, Credential } from '../../core/models/environment.models';
 
 @Component({
   selector: 'app-connections',
@@ -16,7 +16,8 @@ import { UserEnvironment } from '../../core/models/environment.models';
 })
 export class ConnectionsComponent implements OnInit, OnDestroy {
 
-  connections = signal<UserEnvironment[]>([]);
+  credentials = signal<Credential[]>([]);
+  selectedEnvironment: UserEnvironment | null = null;
   selectionForm!: FormGroup;
   
   selectedClientName: string | null = null;
@@ -40,12 +41,32 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
       this.selectedClientName = state.clientName;
       this.selectedTypeName = state.typeName;
 
-      const filteredConnections = state.allUserEnvironments.filter(env => 
+      // Get environments filtered by client and type
+      const filteredEnvironments = state.allUserEnvironments.filter(env => 
         env.client === state.clientId && env.environment_name === state.typeName
       );
-      this.connections.set(filteredConnections);
+
+      // For now, we show credentials from the FIRST environment that has credentials
+      // Or the first environment with selected ID
+      let targetEnvironment: UserEnvironment | null = null;
+
+      if (state.environmentIds.length > 0) {
+        // If there's a selected environment, use it
+        targetEnvironment = filteredEnvironments.find(env => state.environmentIds.includes(env.id)) || null;
+      } else {
+        // Otherwise, use the first environment with credentials
+        targetEnvironment = filteredEnvironments.find(env => env.credentials_count > 0) || filteredEnvironments[0] || null;
+      }
+
+      this.selectedEnvironment = targetEnvironment;
       
-      this.updateFormControls(filteredConnections, state.environmentIds);
+      if (targetEnvironment) {
+        this.credentials.set(targetEnvironment.credentials);
+        // All credentials are pre-selected (disabled checkboxes)
+        this.updateFormControls(targetEnvironment.credentials);
+      } else {
+        this.credentials.set([]);
+      }
     });
   }
 
@@ -59,23 +80,27 @@ export class ConnectionsComponent implements OnInit, OnDestroy {
     return this.selectionForm.get('selectedConnections') as FormArray;
   }
 
-  private updateFormControls(connections: UserEnvironment[], selectedIds: number[]): void {
+  private updateFormControls(credentials: Credential[]): void {
     this.connectionsFormArray.clear();
-    connections.forEach(conn => {
-      const isSelected = selectedIds.includes(conn.id);
-      this.connectionsFormArray.push(new FormControl(isSelected));
+    // All credentials are pre-selected (checkbox disabled)
+    credentials.forEach(() => {
+      this.connectionsFormArray.push(new FormControl({ value: true, disabled: true }));
     });
   }
 
   onSubmit(): void {
-    const selectedIds = this.selectionForm.value.selectedConnections
-      .map((checked: boolean, i: number) => checked ? this.connections()[i].id : null)
-      .filter((id: number | null) => id !== null);
+    if (!this.selectedEnvironment) {
+      console.error('No environment selected');
+      return;
+    }
+
+    // Send the environment ID (which activates ALL its credentials)
+    const environmentId = this.selectedEnvironment.id;
 
     // Save selection to backend - only here the state is persisted
-    this.environmentService.setCurrentEnvironments(selectedIds).subscribe({
+    this.environmentService.setCurrentEnvironments([environmentId]).subscribe({
       next: () => {
-        console.log('Selection saved successfully to backend');
+        console.log('Selection saved successfully to backend - Environment ID:', environmentId);
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
