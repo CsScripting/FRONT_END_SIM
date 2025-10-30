@@ -123,8 +123,8 @@
 /* Main Container */
 .provider-container {
   padding: 1.5rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  /* max-width: 1400px; */ /* Removed to allow full-width */
+  /* margin: 0 auto; */    /* Removed to align to the left */
 }
 
 .section-title {
