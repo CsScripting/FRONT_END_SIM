@@ -22,7 +22,7 @@
 
 .main-sidebar {
   grid-area: sidebar;
-  background-color: rgba(188, 198, 197, 0.897);
+  background-color: rgba(229, 235, 235, 0.897);
   
   overflow-x: hidden;
   display: flex;
@@ -184,7 +184,7 @@
   align-items: center;
   padding: 0.3rem 1rem;
   margin: 0 0.4rem;
-  color: #f2f4f6;
+  color: #0f101082;
   text-decoration: none;
   border-radius: 0.25rem;
   transition: background-color 0.2s, color 0.2s;
@@ -196,7 +196,7 @@
   }
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(181, 172, 172, 0.1);
     color: #fff;
   }
 
@@ -211,6 +211,7 @@
   margin-right: 0.5rem;
   text-align: center;
   font-size: 0.7rem;
+  color: #343131e2; /* <-- Altere esta cor para os ícones */
 }
 
 /* Content Area */
