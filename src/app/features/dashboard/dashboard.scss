@@ -56,8 +56,8 @@
 }
 
 .dashboard-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  /* max-width: 1200px; */ /* This line is removed to allow the container to be full-width */
+  /* margin: 0 auto; */    /* This line is removed to align the container to the left */
   padding: 0.5rem; /* Reduced padding */
 }
 
@@ -122,6 +122,16 @@
   flex-wrap: wrap;
   gap: 20px;
   justify-content: flex-start; /* Ensure items are aligned to the left */
+}
+
+/*
+* of this rule, ensuring it overrides any conflicting global styles.
+*/
+.dashboard-container .environments-grid {
+  /* border: 2px solid red; */ /* Diagnostic border removed */
+  display: grid; /* Use CSS Grid for robust, left-aligned layout */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive columns */
+  gap: 20px;
 }
 
 .environment-card {
