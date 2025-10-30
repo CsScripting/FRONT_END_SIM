@@ -1,0 +1,53 @@
+<div class="content-header">
+  <div class="header-left-content">
+    <h1>Environments</h1>
+  </div>
+</div>
+
+<div class="admin-container">
+  <header class="admin-header">
+    <h2>Select Environment Type</h2>
+    <p>Choose the type of environment to work with. The available connections will be filtered based on your selection.</p>
+  </header>
+
+  <main class="environments-grid" *ngIf="(environmentGroups$ | async) as groups; else loadingOrPrompt">
+    <ng-container *ngIf="groups.length > 0; else noEnvironmentsForClient">
+      <div 
+        class="environment-card" 
+        *ngFor="let group of groups" 
+        (click)="selectEnvironmentAndNavigate(group.name)"
+        [class.selected]="group.name === selectedTypeName">
+        
+        <div class="card-icon"><i class="fas fa-layer-group"></i></div>
+        <div class="environment-content">
+          <h2 class="environment-name">{{ group.name }}</h2>
+          <p class="environment-count">{{ group.count }} connection(s)</p>
+        </div>
+        <div class="selection-indicator"><i class="fas fa-check-circle"></i></div>
+      </div>
+    </ng-container>
+  </main>
+  
+  <ng-template #loadingOrPrompt>
+    <div *ngIf="selectedClientId; else noClientPrompt">
+      <p class="loading-text">Loading environments...</p>
+    </div>
+  </ng-template>
+
+  <ng-template #noClientPrompt>
+    <div class="no-content prompt">
+      <i class="fas fa-info-circle"></i>
+      <p>No Client Selected</p>
+      <span>Please <a routerLink="/clients">select a client</a> first to see its environments.</span>
+    </div>
+  </ng-template>
+
+  <ng-template #noEnvironmentsForClient>
+    <div class="no-content prompt">
+      <i class="fas fa-info-circle"></i>
+      <p>No Environments Found</p>
+      <span>The selected client does not have any environments configured.</span>
+    </div>
+  </ng-template>
+</div>
+

@@ -6,11 +6,6 @@ import { authGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     {
-        path: 'process/:id',
-        loadComponent: () => import('./features/process/process-detail').then(m => m.ProcessDetailComponent),
-        canActivate: [authGuard]
-    },
-    {
         path: '',
         component: MainLayoutComponent,
         canActivate: [authGuard],
@@ -52,6 +47,11 @@ export const routes: Routes = [
                 data: { breadcrumb: 'External Provider' }
             },
         ]
+    },
+    {
+        path: 'process/:id',
+        loadComponent: () => import('./features/process/process-detail').then(m => m.ProcessDetailComponent),
+        canActivate: [authGuard]
     },
     { path: '**', redirectTo: 'dashboard' }
 ];

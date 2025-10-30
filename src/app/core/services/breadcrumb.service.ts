@@ -65,6 +65,13 @@ export class BreadcrumbService {
     return ['dashboard', 'tasks', 'process'].includes(path ?? '');
   }
 
+  /**
+   * Set custom breadcrumbs (useful for dynamic pages like process detail)
+   */
+  setCustomBreadcrumbs(breadcrumbs: Breadcrumb[]): void {
+    this._breadcrumbs$.next(breadcrumbs);
+  }
+
   private addBreadcrumb(route: ActivatedRouteSnapshot | null, parentUrl: string[], breadcrumbs: Breadcrumb[]) {
     if (route) {
       const routeUrl = parentUrl.concat(route.url.map(url => url.path));

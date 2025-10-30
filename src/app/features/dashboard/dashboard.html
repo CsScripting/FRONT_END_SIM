@@ -23,6 +23,9 @@
           {{ env.is_active ? 'Active' : 'Inactive' }}
         </span>
       </div>
+      <div class="selection-indicator">
+        <i class="fas fa-check-circle"></i>
+      </div>
     </div>
 
     <div *ngIf="connections.length === 0" class="no-content">

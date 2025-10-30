@@ -128,17 +128,33 @@
   width: 280px; /* Give cards a fixed width to work with Flexbox */
   background-color: #fff;
   border-radius: 8px;
+  border: 1px solid #e9ecef;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   padding: 24px;
   cursor: pointer;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
   display: flex;
   align-items: center;
   gap: 20px;
+  position: relative;
+
+  /* Active connections always have green border */
+  border-color: #17753f;
+  box-shadow: 0 0 0 2px rgba(23, 117, 63, 0.25);
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(23, 117, 63, 0.25);
+  }
+
+  .selection-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    color: #28a745;
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
