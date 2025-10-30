@@ -1,0 +1,203 @@
+<div class="process-detail-container">
+  
+  <!-- Header -->
+  <div class="process-header">
+    <div class="header-left">
+      <button class="btn-back" (click)="goBack()" title="Back to processes">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+        Back
+      </button>
+      
+      <div class="process-info">
+        <h1>{{ process()?.name || 'Process' }}</h1>
+        <div class="process-meta">
+          <span class="badge badge-primary">{{ process()?.credential_type_name }}</span>
+          <span class="badge badge-secondary">{{ process()?.execution_mode_name }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button 
+        class="btn-export" 
+        (click)="exportToCSV()"
+        [disabled]="!hasExecuted() || totalRecords() === 0"
+        title="Export to CSV">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+        </svg>
+        Export
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading()">
+    <div class="spinner"></div>
+    <p>Loading process...</p>
+  </div>
+
+  <!-- Error States -->
+  <div class="error-container" *ngIf="!loading() && error()">
+    <div class="error-card">
+      <div class="error-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        </svg>
+      </div>
+      <h2>{{ error() === 'PROCESS_NOT_FOUND' ? 'Process Not Found' : 
+           error() === 'NO_ENVIRONMENT_SELECTED' ? 'No Environment Selected' :
+           error() === 'EXECUTION_ERROR' ? 'Execution Error' : 'Error' }}</h2>
+      <p>{{ error() === 'PROCESS_NOT_FOUND' ? 'The requested process could not be found.' : 
+           error() === 'NO_ENVIRONMENT_SELECTED' ? 'Please select an environment first.' :
+           error() === 'EXECUTION_ERROR' ? 'An error occurred while executing the process.' : 
+           'An unexpected error occurred.' }}</p>
+      <button (click)="goBack()" class="btn-secondary">Go Back</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="process-content" *ngIf="!loading() && !error() && process()">
+    
+    <!-- Filters Panel -->
+    <div class="filters-panel" *ngIf="availableFilters().length > 0">
+      <div class="panel-header">
+        <h2>Filters</h2>
+        <span class="filters-count">{{ availableFilters().length }} available</span>
+      </div>
+
+      <form [formGroup]="filtersForm" class="filters-form">
+        <div class="filter-row" *ngFor="let filter of availableFilters(); let i = index">
+          <label [for]="getFilterControlName(filter.path)" class="filter-label">
+            {{ filter.label }}
+            <span class="required" *ngIf="filter.required">*</span>
+          </label>
+          
+          <div class="filter-input-wrapper">
+            <select 
+              [id]="getFilterControlName(filter.path)"
+              [formControlName]="getFilterControlName(filter.path)"
+              class="filter-select">
+              <option [ngValue]="null">-- Select {{ filter.label }} --</option>
+              <option 
+                *ngFor="let option of filterOptions()[getFilterControlName(filter.path)]" 
+                [ngValue]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+            
+            <div class="loading-spinner-small" *ngIf="loadingFilters()"></div>
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button 
+            type="button"
+            class="btn-execute"
+            (click)="executeProcess()"
+            [disabled]="executing() || loadingFilters()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+            </svg>
+            <span *ngIf="!executing()">Execute Process</span>
+            <span *ngIf="executing()">Executing...</span>
+          </button>
+
+          <button 
+            type="button"
+            class="btn-reset"
+            (click)="filtersForm.reset()"
+            [disabled]="executing() || loadingFilters()">
+            Reset
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- No Filters Message -->
+    <div class="no-filters-panel" *ngIf="availableFilters().length === 0">
+      <div class="panel-header">
+        <h2>Execute Process</h2>
+      </div>
+      <p>This process has no configurable filters.</p>
+      <button 
+        type="button"
+        class="btn-execute"
+        (click)="executeProcess()"
+        [disabled]="executing()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+        </svg>
+        <span *ngIf="!executing()">Execute Process</span>
+        <span *ngIf="executing()">Executing...</span>
+      </button>
+    </div>
+
+    <!-- Results Panel -->
+    <div class="results-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Results</h2>
+          <span class="results-count" *ngIf="hasExecuted()">
+            {{ totalRecords() }} record{{ totalRecords() !== 1 ? 's' : '' }}
+          </span>
+        </div>
+        <button 
+          *ngIf="hasExecuted() && totalRecords() > 0"
+          class="btn-clear-filters"
+          (click)="clearAllGridFilters()"
+          title="Clear all column filters">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+          </svg>
+          Clear Filters
+        </button>
+      </div>
+
+      <!-- Executing State -->
+      <div class="executing-state" *ngIf="executing()">
+        <div class="spinner"></div>
+        <p>Executing process...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="!executing() && !hasExecuted()">
+        <div class="empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5" />
+          </svg>
+        </div>
+        <p>Configure filters and click "Execute Process" to view data</p>
+      </div>
+
+      <!-- No Results State -->
+      <div class="empty-state" *ngIf="hasExecuted() && totalRecords() === 0 && !executing()">
+        <div class="empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+          </svg>
+        </div>
+        <p>No data found with the selected filters</p>
+      </div>
+
+      <!-- AG Grid -->
+      <div class="grid-container" *ngIf="hasExecuted() && totalRecords() > 0 && !executing()">
+        <ag-grid-angular
+          style="width: 100%; height: 100%;"
+          [rowData]="rowData()"
+          [columnDefs]="columnDefs()"
+          [defaultColDef]="defaultColDef"
+          [theme]="gridTheme"
+          [pagination]="true"
+          [paginationPageSize]="50"
+          (gridReady)="onGridReady($event)"
+        >
+        </ag-grid-angular>
+      </div>
+    </div>
+
+  </div>
+</div>
+

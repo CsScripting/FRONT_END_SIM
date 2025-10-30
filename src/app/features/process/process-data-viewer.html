@@ -1,0 +1,58 @@
+<div class="data-viewer-container">
+  
+  <!-- Header -->
+  <div class="data-viewer-header">
+    <button (click)="goBack()" class="btn-back">
+      <i class="fas fa-arrow-left"></i>
+      Back to Process
+    </button>
+    <h1>{{ processName() }}</h1>
+    <div class="header-actions">
+      <span class="record-count">{{ totalRecords() }} records</span>
+      <button (click)="exportToCSV()" class="btn-export">
+        <i class="fas fa-download"></i>
+        Export CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading()">
+    <div class="spinner"></div>
+    <p>Loading data...</p>
+  </div>
+
+  <!-- Error States -->
+  <div class="error-container" *ngIf="!loading() && error()">
+    <div class="error-card">
+      <div class="error-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+        </svg>
+      </div>
+      <h2>{{ error() === 'NO_DATA' ? 'No Data Available' : error() === 'EMPTY_RESULT' ? 'Empty Result' : 'Error Loading Data' }}</h2>
+      <p>
+        {{ error() === 'NO_DATA' ? 'No data was provided to display.' : 
+           error() === 'EMPTY_RESULT' ? 'The process returned no records.' : 
+           'An error occurred while loading the data.' }}
+      </p>
+      <button (click)="goBack()" class="btn-back-error">Back to Process</button>
+    </div>
+  </div>
+
+  <!-- AG Grid -->
+  <div class="grid-wrapper" *ngIf="!loading() && !error()">
+    <ag-grid-angular
+      class="ag-theme-alpine"
+      [rowData]="rowData()"
+      [columnDefs]="columnDefs()"
+      [defaultColDef]="defaultColDef"
+      [pagination]="true"
+      [paginationPageSize]="50"
+      [animateRows]="true"
+      (gridReady)="onGridReady($event)"
+    ></ag-grid-angular>
+  </div>
+
+</div>
+

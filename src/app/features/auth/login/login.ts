@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -16,8 +16,12 @@ import { Client } from '../../../core/models/client.models';
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
+  currentWord: string = 'process';
+  private words: string[] = ['process', 'solution', 'services'];
+  private currentIndex: number = 0;
+  private intervalId: any;
 
   constructor(
     private fb: FormBuilder,
@@ -31,7 +35,20 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // No longer needed
+    this.startWordRotation();
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+
+  private startWordRotation(): void {
+    this.intervalId = setInterval(() => {
+      this.currentIndex = (this.currentIndex + 1) % this.words.length;
+      this.currentWord = this.words[this.currentIndex];
+    }, 5000);
   }
 
   onLogin(): void {
