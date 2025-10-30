@@ -1,0 +1,21 @@
+<div class="content-header-wrapper">
+  <div class="header-left">
+    <button *ngIf="showBackButton" class="btn-back" (click)="onBackClick()" title="Back">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+      </svg>
+      Back
+    </button>
+    
+    <div class="header-info">
+      <h1>{{ title }}</h1>
+      <div class="header-meta">
+        <ng-content select="[meta]"></ng-content>
+      </div>
+    </div>
+  </div>
+
+  <div class="header-actions">
+    <ng-content select="[actions]"></ng-content>
+  </div>
+</div>

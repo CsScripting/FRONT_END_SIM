@@ -42,16 +42,22 @@ export const routes: Routes = [
                 data: { breadcrumb: 'Process' }
             },
             { 
+                path: 'process/:id',
+                loadComponent: () => import('./features/process/process-detail').then(m => m.ProcessDetailComponent),
+                data: { breadcrumb: 'Process Detail' } // Add breadcrumb data
+            },
+            { 
                 path: 'external-provider',
                 loadComponent: () => import('./features/external-provider/external-provider').then(m => m.ExternalProviderComponent),
                 data: { breadcrumb: 'External Provider' }
             },
         ]
     },
-    {
-        path: 'process/:id',
-        loadComponent: () => import('./features/process/process-detail').then(m => m.ProcessDetailComponent),
-        canActivate: [authGuard]
-    },
+    // The route below has been moved inside the MainLayoutComponent's children
+    // {
+    //     path: 'process/:id',
+    //     loadComponent: () => import('./features/process/process-detail').then(m => m.ProcessDetailComponent),
+    //     canActivate: [authGuard]
+    // },
     { path: '**', redirectTo: 'dashboard' }
 ];

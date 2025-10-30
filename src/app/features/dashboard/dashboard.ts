@@ -5,11 +5,12 @@ import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { EnvironmentService } from '../../core/services/environment.service';
 import { UserEnvironment } from '../../core/models/environment.models';
+import { ContentHeaderComponent } from '../../shared/components/content-header/content-header.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ContentHeaderComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })

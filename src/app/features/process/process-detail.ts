@@ -1,11 +1,12 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef, GridReadyEvent, ModuleRegistry, AllCommunityModule, themeQuartz } from 'ag-grid-community';
 import { forkJoin } from 'rxjs';
 
+import { ContentHeaderComponent } from '../../shared/components/content-header/content-header.component';
 import { ProcessService } from '../../core/services/process.service';
 import { EnvironmentService } from '../../core/services/environment.service';
 import { 
@@ -22,7 +23,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 @Component({
   selector: 'app-process-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AgGridAngular],
+  imports: [CommonModule, ReactiveFormsModule, AgGridAngular, ContentHeaderComponent, RouterLink],
   templateUrl: './process-detail.html',
   styleUrl: './process-detail.scss'
 })
@@ -58,6 +59,7 @@ export class ProcessDetailComponent implements OnInit {
   error = signal<string | null>(null);
   hasExecuted = signal<boolean>(false);
   totalRecords = signal<number>(0);
+  isFiltersCollapsed = signal<boolean>(false); // State for the collapsible panel
 
   constructor(
     private route: ActivatedRoute,
@@ -494,6 +496,13 @@ export class ProcessDetailComponent implements OnInit {
     
     // Auto-size all columns based on content
     this.autoSizeAllColumns();
+  }
+
+  /**
+   * Toggles the visibility of the filters panel
+   */
+  toggleFiltersPanel(): void {
+    this.isFiltersCollapsed.update(value => !value);
   }
 
   /**

@@ -1,0 +1,100 @@
+/*
+*  Main wrapper for the content header.
+*  - Uses Flexbox to align content.
+*  - Sets padding, background, and a bottom border for separation.
+*/
+.content-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/*
+*  Left side of the header.
+*  - Contains the back button and title/meta info.
+*/
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/*
+*  Back button styling.
+*  - Basic button styles with a clear visual affordance.
+*  - Includes an SVG icon.
+*/
+.btn-back {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background-color: #e2e8f0;
+    border-color: #94a3b8;
+  }
+}
+
+/*
+*  Container for the main title and meta content.
+*/
+.header-info {
+  h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.2;
+  }
+}
+
+/*
+*  Container for projected meta-information (e.g., badges).
+*  - Uses Flexbox to lay out items.
+*  - ng-content with `select="[meta]"` will project content here.
+*/
+.header-meta {
+  display: flex;
+  gap: 0.5rem;
+  min-height: 24px; // Reserve space even if empty to prevent layout shifts
+}
+
+/*
+*  Right side of the header.
+*  - Used for action buttons (e.g., Export, Save).
+*  - ng-content with `select="[actions]"` will project buttons here.
+*/
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/*
+*  Responsive adjustments for smaller screens.
+*  - Stacks the header vertically.
+*/
+@media (max-width: 768px) {
+  .content-header-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}

@@ -81,6 +81,16 @@
   }
 }
 
+// Ensure anchor tags used as badges look and feel right
+a.badge {
+  text-decoration: none; // Remove underline
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.85; // Add a subtle hover effect
+  }
+}
+
 .header-actions {
   display: flex;
   gap: 0.75rem;
@@ -89,6 +99,8 @@
 .btn-export {
   display: flex;
   align-items: center;
+  justify-content: center; // Center content
+  min-width: 110px;        // Set a minimum width
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   background-color: #10b981;
@@ -119,8 +131,8 @@
 .process-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.5rem 2rem;
+  // Switched from gap/padding-top to explicit margins on children for consistent spacing
+  padding: 0 2rem 1.5rem 2rem; 
   flex: 1;
   overflow-y: auto;
 }
@@ -133,6 +145,7 @@
   padding: 1.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
+  margin-top: 0.8rem; // Explicit top margin for consistent spacing
 }
 
 .panel-header {
@@ -140,8 +153,9 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  width: 100%; // Ensure it takes full width
 
-  > div {
+  > div:not(.panel-actions) { // Exclude panel-actions from this rule
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -153,6 +167,65 @@
     font-weight: 600;
     color: #1e293b;
   }
+}
+
+.panel-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-toggle {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: #64748b;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  &:hover {
+    background-color: #f1f5f9;
+  }
+}
+
+// Rotate the chevron icon and adjust padding when the panel is collapsed
+.filters-panel.collapsed {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  transition: padding 0.3s ease-in-out;
+
+  .panel-header {
+    margin-bottom: 0;
+  }
+
+  .btn-toggle svg {
+    transform: rotate(-180deg);
+  }
+}
+
+// New class for the process info in the filter panel header
+.process-info-in-panel {
+  display: flex;
+  flex-direction: row;     // Changed from 'column' to 'row'
+  align-items: center; // Vertically align items in the center
+  gap: 0.75rem;          // Increased gap for better spacing
+}
+
+// New class to group action buttons in panel headers
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .filters-count,
@@ -196,7 +269,7 @@
 }
 
 .filter-select {
-  width: 100%;
+  width: 50%; // Changed from 100% to 50%
   padding: 0.5rem 0.75rem;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
@@ -240,7 +313,7 @@
 .btn-execute {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center; // Center text
   padding: 0.625rem 1.5rem;
   background-color: #3b82f6;
   border: none;
@@ -251,10 +324,13 @@
   cursor: pointer;
   transition: all 0.2s;
 
+  // SVG styles are no longer needed as the icon has been removed
+  /*
   svg {
     width: 18px;
     height: 18px;
   }
+  */
 
   &:hover:not(:disabled) {
     background-color: #2563eb;
@@ -309,6 +385,7 @@
   flex-direction: column;
   min-height: 400px;
   overflow: hidden;
+  margin-top: 1.5rem; // Explicit top margin for consistent spacing
 }
 
 .grid-container {
@@ -443,6 +520,8 @@
 .btn-clear-filters {
   display: flex;
   align-items: center;
+  justify-content: center; // Center content
+  min-width: 110px;        // Set a minimum width
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   background-color: #fef3c7;
@@ -481,5 +560,10 @@
 
   .filter-actions {
     flex-direction: column;
+  }
+  
+  // On smaller screens, the select should take the full width
+  .filter-select {
+    width: 100%;
   }
 }
